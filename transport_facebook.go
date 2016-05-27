@@ -29,9 +29,21 @@ func( t *FacebookTransport ) DoLogin() {
   if err != nil {
     panic(err)
   }
-  LoginForm, _ := t.Browser.Form( "mobile-login-form" )
-  fmt.Println(LoginForm)
-  LoginForm.Input( "username", "abc")
-  LoginForm.Input( "password", "123")
-  LoginForm.Submit()
+  fmt.Println(t.Browser.Body())
+  LoginForm := t.Browser.Forms()[1]
+  LoginForm.Input( "email", t.Login )
+  LoginForm.Input( "pass", t.Password )
+  if LoginForm.Submit() != nil {
+    panic(err)
+  }
+
+  err = t.Browser.Open( "https://mobile.facebook.com/profile.php")
+
+  if err != nil {
+    panic(err)
+  }
+
+  fmt.Println( "Logged in as", t.Browser.Title(), "?")
+
+  // fmt.Println( t.Browser.Body() )
 }
