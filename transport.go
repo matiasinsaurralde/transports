@@ -1,9 +1,9 @@
 package transports
 
 type Transport struct {
-  Name string
+	Name string
 }
 
-func( t *Transport ) Prepare() {
-  return
+func (t *Transport) Prepare() {
+	return
 }
