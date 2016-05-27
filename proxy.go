@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"errors"
 )
 
 type Request struct {
@@ -20,8 +21,19 @@ type Proxy struct {
 
 func (proxy *Proxy) Listen() {
 	fmt.Println("Listening on", proxy.Port, ", transport:", proxy.Transport)
+
+	err := errors.New("no transport specified")
+
+	if proxy.Transport == nil {
+		panic(err)
+	}
+
 	transport := proxy.Transport.(FacebookTransport)
 	transport.Prepare()
+
+	http.HandleFunc("/", HandleRequest)
+	http.ListenAndServe(":8080", nil)
+
 	return
 }
 
