@@ -94,7 +94,9 @@ func (t *FacebookTransport) Handler(w http.ResponseWriter, originalRequest *http
 }
 
 func (t *FacebookTransport) Listen() {
-	fmt.Println( "FacebookTransport, Listen()", "Polling...")
+	fmt.Println( "FacebookTransport, Listen()")
+	t.Prepare()
+	fmt.Println("Polling...")
 	for {
 	}
 	return
