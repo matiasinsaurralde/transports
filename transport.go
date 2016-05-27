@@ -13,3 +13,7 @@ func (t *Transport) Prepare() {
 func (t *Transport) Handler(w http.ResponseWriter, req *http.Request) {
 	return
 }
+
+func (t *Transport) Listen() {
+	return
+}
