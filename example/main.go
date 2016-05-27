@@ -2,11 +2,13 @@ package main
 
 import(
   "github.com/matiasinsaurralde/transports"
+  "github.com/joho/godotenv"
   "fmt"
   "os"
 )
 
 func main() {
+  godotenv.Load()
   fmt.Println("Transports test")
 
   facebookTransport := transports.FacebookTransport{
