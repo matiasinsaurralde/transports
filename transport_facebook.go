@@ -13,6 +13,7 @@ type FacebookTransport struct {
 	*Transport
 	Login         string
 	Password      string
+	Friend				string
 	Browser       *browser.Browser
 	Serializer		DefaultSerializer
 }
@@ -23,7 +24,7 @@ func (t *FacebookTransport) DoLogin() bool {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(t.Browser.Body())
+
 	LoginForm := t.Browser.Forms()[1]
 	LoginForm.Input("email", t.Login)
 	LoginForm.Input("pass", t.Password)
@@ -38,6 +39,16 @@ func (t *FacebookTransport) DoLogin() bool {
 	}
 
 	fmt.Println("Logged in as", t.Browser.Title(), "?")
+
+	FriendUrl := fmt.Sprintf("https://mobile.facebook.com/%s", t.Friend )
+	err = t.Browser.Open( FriendUrl)
+
+	if err != nil {
+		panic(err)
+	}
+
+	t.Browser.Click("a[href*=\"/messages/thread/\"]")
+
 
 	return true
 
@@ -59,6 +70,7 @@ func (t *FacebookTransport) Prepare() {
 }
 
 func (t *FacebookTransport) Handler(w http.ResponseWriter, originalRequest *http.Request) {
+
 	client := &http.Client{}
 
 	request, _ := http.NewRequest(originalRequest.Method, originalRequest.URL.String(), nil)
@@ -67,6 +79,10 @@ func (t *FacebookTransport) Handler(w http.ResponseWriter, originalRequest *http
 
 	fmt.Println("Got", originalRequest)
 	fmt.Println("Serialized", string(serializedRequest))
+
+	MessageForm, _ := t.Browser.Form("#composer_form")
+	MessageForm.Input( "body", string(serializedRequest))
+	MessageForm.Submit()
 
 	resp, _ := client.Do(request)
 	b, _ := ioutil.ReadAll(resp.Body)
