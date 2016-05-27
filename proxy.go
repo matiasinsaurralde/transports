@@ -13,6 +13,18 @@ type Request struct {
   Headers map[string][]string
 }
 
+type Proxy struct {
+  Port int
+  Transport interface{}
+}
+
+func( proxy *Proxy ) Listen() {
+  fmt.Println( "Listening on", proxy.Port, ", transport:", proxy.Transport )
+  transport := proxy.Transport.(FacebookTransport)
+  transport.Prepare()
+  return
+}
+
 func MarshalRequest( request *http.Request ) []byte {
   r := Request{
     Method: request.Method,
