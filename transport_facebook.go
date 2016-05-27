@@ -2,6 +2,8 @@ package transports
 
 import (
 	"fmt"
+	"net/http"
+	"io/ioutil"
 	"github.com/headzoo/surf"
 	"github.com/headzoo/surf/browser"
 	"errors"
@@ -12,18 +14,7 @@ type FacebookTransport struct {
 	Login         string
 	Password      string
 	Browser       *browser.Browser
-}
-
-func (t *FacebookTransport) Prepare() {
-	fmt.Println("FacebookTransport, Prepare()")
-	t.Browser = surf.NewBrowser()
-
-	if !t.DoLogin() {
-		err := errors.New( "Authentication error!")
-		panic(err)
-	}
-
-	return
+	Serializer		DefaultSerializer
 }
 
 func (t *FacebookTransport) DoLogin() bool {
@@ -50,4 +41,38 @@ func (t *FacebookTransport) DoLogin() bool {
 
 	return true
 
+}
+
+func (t *FacebookTransport) Prepare() {
+	fmt.Println("FacebookTransport, Prepare()")
+
+	t.Serializer = DefaultSerializer{}
+
+	t.Browser = surf.NewBrowser()
+
+	if !t.DoLogin() {
+		err := errors.New( "Authentication error!")
+		panic(err)
+	}
+
+	return
+}
+
+func (t *FacebookTransport) Handler(w http.ResponseWriter, originalRequest *http.Request) {
+	client := &http.Client{}
+
+	request, _ := http.NewRequest(originalRequest.Method, originalRequest.URL.String(), nil)
+
+	serializedRequest := t.Serializer.Serialize(request)
+
+	fmt.Println("Got", originalRequest)
+	fmt.Println("Serialized", string(serializedRequest))
+
+	resp, _ := client.Do(request)
+	b, _ := ioutil.ReadAll(resp.Body)
+	resp.Body.Close()
+
+	w.Write(b)
+
+	return
 }
