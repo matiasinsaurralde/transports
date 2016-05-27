@@ -7,6 +7,7 @@ import (
 )
 
 type FacebookTransport struct {
+	*Transport
 	Login         string
 	Password      string
 	Browser       *browser.Browser
