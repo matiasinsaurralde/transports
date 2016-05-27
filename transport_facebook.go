@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/headzoo/surf"
 	"github.com/headzoo/surf/browser"
+	"errors"
 )
 
 type FacebookTransport struct {
@@ -11,20 +12,21 @@ type FacebookTransport struct {
 	Login         string
 	Password      string
 	Browser       *browser.Browser
-	Authenticated bool
 }
 
 func (t *FacebookTransport) Prepare() {
 	fmt.Println("FacebookTransport, Prepare()")
 	t.Browser = surf.NewBrowser()
-	t.Authenticated = false
 
-	t.DoLogin()
+	if !t.DoLogin() {
+		err := errors.New( "Authentication error!")
+		panic(err)
+	}
 
 	return
 }
 
-func (t *FacebookTransport) DoLogin() {
+func (t *FacebookTransport) DoLogin() bool {
 	fmt.Println("FacebookTransport, Login()")
 	err := t.Browser.Open("https://mobile.facebook.com/")
 	if err != nil {
@@ -46,5 +48,6 @@ func (t *FacebookTransport) DoLogin() {
 
 	fmt.Println("Logged in as", t.Browser.Title(), "?")
 
-	// fmt.Println( t.Browser.Body() )
+	return true
+
 }
