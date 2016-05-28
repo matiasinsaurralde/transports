@@ -16,6 +16,7 @@ type FacebookTransport struct {
 	Friend				string
 	Browser       *browser.Browser
 	Serializer		DefaultSerializer
+	ChatUrl string
 }
 
 func (t *FacebookTransport) DoLogin() bool {
@@ -49,6 +50,7 @@ func (t *FacebookTransport) DoLogin() bool {
 
 	t.Browser.Click("a[href*=\"/messages/thread/\"]")
 
+	t.ChatUrl = t.Browser.Url().String()
 
 	return true
 
@@ -70,6 +72,8 @@ func (t *FacebookTransport) Prepare() {
 }
 
 func (t *FacebookTransport) Handler(w http.ResponseWriter, originalRequest *http.Request) {
+
+	t.Browser.Open( t.ChatUrl )
 
 	client := &http.Client{}
 
