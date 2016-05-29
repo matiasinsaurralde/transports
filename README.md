@@ -12,6 +12,8 @@ This repository includes some code to explore the idea, also I'm also planning t
 
 ### Facebook Transport
 
+This transports uses [surf](https://github.com/headzoo/surf), a stateful web browser built in Go.
+
 Load your credentials by using ```export``` or the ```.env``` file:
 
 ```
@@ -19,6 +21,12 @@ FB_LOGIN=youraccount@facebook.com
 FB_PASSWORD=supersecretpass
 FB_FRIEND=yourtunnelfriend
 ```
+
+### Whatsapp Transport
+
+This transport uses a [HTTP wrapper](https://github.com/matiasinsaurralde/yowsup-http-wrapper) for [yowsup](https://github.com/tgalal/yowsup) to send/receive Whatsapp messages, it would be good to have a pure Golang Whatsapp library. The current approach is fine for this experiment.
+
+**Requires Python 3***
 
 ## Contributors
 
