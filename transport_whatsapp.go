@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"time"
 	"strings"
+	"bytes"
 	// "errors"
 )
 
@@ -24,10 +25,13 @@ type WhatsappTransport struct {
 }
 
 type WhatsappMessage struct {
-	Id string
-	Body string
-	Origin string
+	Id string	`json:"id,omitempty"`
+	Body string `json:"msg,omitempty"`
+	Origin string	`json:"origin,omitempty"`
+	Dest string `json:"dest,omitempty"`
 }
+
+type WhatsappMessageCallback func(*WhatsappTransport)
 
 func (t *WhatsappTransport) DaemonizeWrapper() {
 	fmt.Println( "WhatsappTransport, daemonizing YowsupWrapper...")
@@ -45,6 +49,12 @@ func( t *WhatsappTransport) GetMessageIds() []string {
 		MessageIds = append( MessageIds, Message.Id )
 	}
 	return MessageIds
+}
+
+func( t *WhatsappTransport) PurgeMessage( Id string ) {
+	messagesUrl := fmt.Sprintf("%s%s?id=%s", YowsupHttpWrapperUrl, "messages", Id)
+	deleteRequest, _ := http.NewRequest( "DELETE", messagesUrl, nil)
+	http.DefaultClient.Do(deleteRequest)
 }
 
 func( t *WhatsappTransport) FetchMessages() {
@@ -92,6 +102,14 @@ func( t *WhatsappTransport) FetchMessages() {
 	return
 }
 
+func (t *WhatsappTransport) SendMessage(body string) {
+	messagesUrl := strings.Join([]string{YowsupHttpWrapperUrl, "messages"}, "")
+	message := WhatsappMessage{Body: body, Dest: t.Contact}
+	jsonBuffer, _ := json.Marshal(&message)
+	resp, err := http.Post(messagesUrl, "application/json", bytes.NewReader(jsonBuffer) )
+	return
+}
+
 func (t *WhatsappTransport) DoLogin() bool {
 	fmt.Println("FacebookTransport, Login()")
 	return true
@@ -106,7 +124,7 @@ func (t *WhatsappTransport) Prepare() {
 
 	go t.DaemonizeWrapper()
 
-	go t.Listen()
+	go t.Listen(nil)
 
 	/*
 	if !t.DoLogin() {
@@ -124,16 +142,9 @@ func (t *WhatsappTransport) Handler(w http.ResponseWriter, originalRequest *http
 
 	request, _ := http.NewRequest(originalRequest.Method, originalRequest.URL.String(), nil)
 
-	serializedRequest := t.Serializer.Serialize(request)
+	serializedRequest := t.Serializer.Serialize(originalRequest)
 
-	fmt.Println("Got", originalRequest)
-	fmt.Println("Serialized", string(serializedRequest))
-
-	/*
-	MessageForm, _ := t.Browser.Form("#composer_form")
-	MessageForm.Input( "body", string(serializedRequest))
-	MessageForm.Submit()
-	*/
+	t.SendMessage(string(serializedRequest))
 
 	resp, _ := client.Do(request)
 	b, _ := ioutil.ReadAll(resp.Body)
@@ -144,11 +155,16 @@ func (t *WhatsappTransport) Handler(w http.ResponseWriter, originalRequest *http
 	return
 }
 
-func (t *WhatsappTransport) Listen() {
+func (t *WhatsappTransport) Listen( Callback WhatsappMessageCallback ) {
 	fmt.Println( "FacebookTransport, Listen()")
 	fmt.Println("Polling...")
 	for {
 		fmt.Println( "Poll, messages:", t.Messages )
+		t.FetchMessages()
+		if Callback == nil {
+		} else {
+			Callback( t )
+		}
 		t.FetchMessages()
 		time.Sleep(1 * time.Second)
 	}
