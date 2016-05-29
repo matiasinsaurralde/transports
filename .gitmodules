@@ -1,0 +1,3 @@
+[submodule "yowsup-http-wrapper"]
+	path = yowsup-http-wrapper
+	url = https://github.com/matiasinsaurralde/yowsup-http-wrapper.git
