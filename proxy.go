@@ -22,7 +22,8 @@ func (proxy *Proxy) Listen() {
 		panic(err)
 	}
 
-	transport := proxy.Transport.(FacebookTransport)
+	// transport := proxy.Transport.(FacebookTransport)
+	transport := proxy.Transport.(WhatsappTransport)
 	transport.Prepare()
 
 	http.HandleFunc("/", transport.Handler)
