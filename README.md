@@ -24,7 +24,17 @@ FB_FRIEND=yourtunnelfriend
 
 ### Whatsapp Transport
 
-This transport uses a [HTTP wrapper](https://github.com/matiasinsaurralde/yowsup-http-wrapper) for [yowsup](https://github.com/tgalal/yowsup) to send/receive Whatsapp messages, it would be good to have a pure Golang Whatsapp library. The current approach is fine for this experiment.
+This transport uses a [HTTP wrapper](https://github.com/matiasinsaurralde/yowsup-http-wrapper) for [yowsup](https://github.com/tgalal/yowsup) to send/receive Whatsapp messages.
+
+It would be good to have a "pure Golang" Whatsapp library but I think the current approach is fine for experimentation.
+
+The following environment variables are used:
+
+```
+WA_LOGIN=123412341
+WA_PASSWORD=whatsappgeneratedpassword123
+WA_CONTACT=43214321
+```
 
 **Requires Python 3**
 
