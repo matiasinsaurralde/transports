@@ -4,8 +4,14 @@ import (
 	"fmt"
 	"net/http"
 	"io/ioutil"
+	"os/exec"
+	"time"
+	"strings"
 	// "errors"
 )
+
+const YowsupHttpWrapperPath = "../yowsup-http-wrapper/run.py"
+const YowsupHttpWrapperUrl = "http://127.0.0.1:8888/"
 
 type WhatsappTransport struct {
 	*Transport
@@ -15,16 +21,36 @@ type WhatsappTransport struct {
 	Serializer		DefaultSerializer
 }
 
+func (t *WhatsappTransport) DaemonizeWrapper() {
+	fmt.Println( "WhatsappTransport, daemonizing YowsupWrapper...")
+	cmd := exec.Command( "python3", YowsupHttpWrapperPath, t.Login, t.Password )
+	err := cmd.Run()
+	if err != nil {
+		panic(err)
+	}
+}
+
+func( t *WhatsappTransport) FetchMessages() {
+	// messagesUrl := strings.Join(%{YowsupHttpWrapperUrl})
+	// resp, err := http.Get()
+	/fmt.Println(123,messagesUrl)
+	return
+}
+
 func (t *WhatsappTransport) DoLogin() bool {
 	fmt.Println("FacebookTransport, Login()")
 	return true
-
 }
 
 func (t *WhatsappTransport) Prepare() {
-	fmt.Println("FacebookTransport, Prepare()")
+	fmt.Println("WhatsappTransport, Prepare()")
 
 	t.Serializer = DefaultSerializer{}
+
+	go t.DaemonizeWrapper()
+
+	go t.Listen()
+
 	/*
 	if !t.DoLogin() {
 		err := errors.New( "Authentication error!")
@@ -63,9 +89,11 @@ func (t *WhatsappTransport) Handler(w http.ResponseWriter, originalRequest *http
 
 func (t *WhatsappTransport) Listen() {
 	fmt.Println( "FacebookTransport, Listen()")
-	t.Prepare()
 	fmt.Println("Polling...")
 	for {
+		fmt.Println( "Poll." )
+		t.FetchMessages()
+		time.Sleep(5 * time.Second)
 	}
 	return
 }
