@@ -2,6 +2,7 @@ package transports
 
 import (
 	"fmt"
+	"encoding/json"
 	"net/http"
 	"io/ioutil"
 	"os/exec"
@@ -19,21 +20,75 @@ type WhatsappTransport struct {
 	Password      string
 	Contact				string
 	Serializer		DefaultSerializer
+	Messages			[]WhatsappMessage
+}
+
+type WhatsappMessage struct {
+	Id string
+	Body string
+	Origin string
 }
 
 func (t *WhatsappTransport) DaemonizeWrapper() {
 	fmt.Println( "WhatsappTransport, daemonizing YowsupWrapper...")
 	cmd := exec.Command( "python3", YowsupHttpWrapperPath, t.Login, t.Password )
 	err := cmd.Run()
+
 	if err != nil {
 		panic(err)
 	}
 }
 
+func( t *WhatsappTransport) GetMessageIds() []string {
+	MessageIds := make( []string, 0 )
+	for _, Message := range t.Messages {
+		MessageIds = append( MessageIds, Message.Id )
+	}
+	return MessageIds
+}
+
 func( t *WhatsappTransport) FetchMessages() {
-	// messagesUrl := strings.Join(%{YowsupHttpWrapperUrl})
-	// resp, err := http.Get()
-	/fmt.Println(123,messagesUrl)
+	messagesUrl := strings.Join([]string{YowsupHttpWrapperUrl, "messages"}, "")
+	resp, err := http.Get(messagesUrl)
+
+	// fmt.Println( "Request:",resp, "Error:",err)
+
+	if err != nil {
+		// fmt.Println( "Wrapper error:", err)
+		return
+	}
+
+	defer resp.Body.Close()
+
+	rawBody, _ := ioutil.ReadAll( resp.Body )
+
+	var messageList map[string]interface{}
+
+	jsonErr := json.Unmarshal( rawBody, &messageList)
+
+	if jsonErr != nil {
+		return
+	}
+
+	MessageIds := t.GetMessageIds()
+
+	for Id, Values := range messageList {
+		ValuesMap := Values.(map[string]interface{})
+		Message := WhatsappMessage{ Id: Id, Body: ValuesMap["body"].(string), Origin: ValuesMap["origin"].(string) }
+		Exists := false
+
+		for _, ExistingId := range MessageIds {
+			if ExistingId == Id {
+				Exists = true
+				return
+			}
+		}
+
+		if !Exists {
+			t.Messages = append( t.Messages, Message )
+		}
+	}
+
 	return
 }
 
@@ -46,6 +101,8 @@ func (t *WhatsappTransport) Prepare() {
 	fmt.Println("WhatsappTransport, Prepare()")
 
 	t.Serializer = DefaultSerializer{}
+
+	t.Messages = make([]WhatsappMessage, 0)
 
 	go t.DaemonizeWrapper()
 
@@ -91,9 +148,9 @@ func (t *WhatsappTransport) Listen() {
 	fmt.Println( "FacebookTransport, Listen()")
 	fmt.Println("Polling...")
 	for {
-		fmt.Println( "Poll." )
+		fmt.Println( "Poll, messages:", t.Messages )
 		t.FetchMessages()
-		time.Sleep(5 * time.Second)
+		time.Sleep(1 * time.Second)
 	}
 	return
 }
