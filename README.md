@@ -31,9 +31,12 @@ It would be good to have a "pure Golang" Whatsapp library but I think the curren
 The following environment variables are used:
 
 ```
-WA_LOGIN=123412341
-WA_PASSWORD=whatsappgeneratedpassword123
-WA_CONTACT=43214321
+WA_CLIENT_LOGIN=123412341
+WA_CLIENT_PASSWORD=whatsappgeneratedpassword123
+WA_CLIENT_CONTACT=43214321
+
+WA_SERVER_LOGIN=123412341
+WA_SERVER_PASSWORD=whatsappgeneratedpassword123
 ```
 
 **Requires Python 3**
