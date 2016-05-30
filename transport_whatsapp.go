@@ -13,13 +13,14 @@ import (
 )
 
 const YowsupHttpWrapperPath = "../yowsup-http-wrapper/run.py"
-const YowsupHttpWrapperUrl = "http://127.0.0.1:8888/"
 
 type WhatsappTransport struct {
 	*Transport
 	Login         string
 	Password      string
 	Contact				string
+	YowsupWrapperPort	string
+	YowsupWrapperUrl string
 	Serializer		DefaultSerializer
 	Messages			[]WhatsappMessage
 }
@@ -35,8 +36,13 @@ type WhatsappMessageCallback func(*WhatsappTransport)
 
 func (t *WhatsappTransport) DaemonizeWrapper() {
 	fmt.Println( "WhatsappTransport, daemonizing YowsupWrapper...")
-	cmd := exec.Command( "python3", YowsupHttpWrapperPath, t.Login, t.Password )
+
+	t.YowsupWrapperUrl = fmt.Sprintf("http://127.0.0.1:%s/", t.YowsupWrapperPort)
+
+	cmd := exec.Command( "python3", YowsupHttpWrapperPath, t.Login, t.Password, t.YowsupWrapperPort )
 	err := cmd.Run()
+
+	fmt.Println(cmd,err)
 
 	if err != nil {
 		panic(err)
@@ -52,19 +58,19 @@ func( t *WhatsappTransport) GetMessageIds() []string {
 }
 
 func( t *WhatsappTransport) PurgeMessage( Id string ) {
-	messagesUrl := fmt.Sprintf("%s%s?id=%s", YowsupHttpWrapperUrl, "messages", Id)
+	messagesUrl := fmt.Sprintf("%s%s?id=%s", t.YowsupWrapperUrl, "messages", Id)
 	deleteRequest, _ := http.NewRequest( "DELETE", messagesUrl, nil)
 	http.DefaultClient.Do(deleteRequest)
 }
 
 func( t *WhatsappTransport) FetchMessages() {
-	messagesUrl := strings.Join([]string{YowsupHttpWrapperUrl, "messages"}, "")
+	messagesUrl := strings.Join([]string{t.YowsupWrapperUrl, "messages"}, "")
 	resp, err := http.Get(messagesUrl)
 
 	// fmt.Println( "Request:",resp, "Error:",err)
 
 	if err != nil {
-		// fmt.Println( "Wrapper error:", err)
+		fmt.Println( "Wrapper error:", err)
 		return
 	}
 
@@ -103,10 +109,11 @@ func( t *WhatsappTransport) FetchMessages() {
 }
 
 func (t *WhatsappTransport) SendMessage(body string) {
-	messagesUrl := strings.Join([]string{YowsupHttpWrapperUrl, "messages"}, "")
+	messagesUrl := strings.Join([]string{t.YowsupWrapperUrl, "messages"}, "")
 	message := WhatsappMessage{Body: body, Dest: t.Contact}
+	fmt.Println("Sending message", message)
 	jsonBuffer, _ := json.Marshal(&message)
-	resp, err := http.Post(messagesUrl, "application/json", bytes.NewReader(jsonBuffer) )
+	http.Post(messagesUrl, "application/json", bytes.NewReader(jsonBuffer) )
 	return
 }
 
@@ -122,9 +129,9 @@ func (t *WhatsappTransport) Prepare() {
 
 	t.Messages = make([]WhatsappMessage, 0)
 
-	go t.DaemonizeWrapper()
+	// go t.DaemonizeWrapper()
 
-	go t.Listen(nil)
+	// go t.Listen(nil)
 
 	/*
 	if !t.DoLogin() {
@@ -156,8 +163,14 @@ func (t *WhatsappTransport) Handler(w http.ResponseWriter, originalRequest *http
 }
 
 func (t *WhatsappTransport) Listen( Callback WhatsappMessageCallback ) {
+
 	fmt.Println( "FacebookTransport, Listen()")
 	fmt.Println("Polling...")
+
+	t.Prepare()
+
+	go t.DaemonizeWrapper()
+
 	for {
 		fmt.Println( "Poll, messages:", t.Messages )
 		t.FetchMessages()
