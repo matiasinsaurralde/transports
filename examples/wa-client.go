@@ -13,10 +13,13 @@ func main() {
   fmt.Println("Transports test (Whatsapp/Yowsup)")
 
   whatsappTransport := transports.WhatsappTransport{
-    Login: os.Getenv( "WA_LOGIN" ),
-    Password: os.Getenv( "WA_PASSWORD" ),
-    Contact: os.Getenv( "WA_CONTACT" ),
+    Login: os.Getenv( "WA_CLIENT_LOGIN" ),
+    Password: os.Getenv( "WA_CLIENT_PASSWORD" ),
+    Contact: os.Getenv( "WA_CLIENT_CONTACT" ),
+    YowsupWrapperPort: "8888",
   }
+
+  whatsappTransport.Listen(nil)
 
   Proxy := transports.Proxy{
     Transport: whatsappTransport,

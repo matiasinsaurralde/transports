@@ -15,9 +15,10 @@ func main() {
   fmt.Println("Transports test (Whatsapp/Yowsup)")
 
   whatsappTransport := transports.WhatsappTransport{
-    Login: os.Getenv( "WA_LOGIN" ),
-    Password: os.Getenv( "WA_PASSWORD" ),
-    Contact: os.Getenv( "WA_CONTACT" ),
+    Login: os.Getenv( "WA_SERVER_LOGIN" ),
+    Password: os.Getenv( "WA_SERVER_PASSWORD" ),
+    Contact: os.Getenv( "WA_SERVER_CONTACT" ),
+    YowsupWrapperPort: "8889",
   }
 
   whatsappTransport.Listen( func( t *transports.WhatsappTransport ) {
