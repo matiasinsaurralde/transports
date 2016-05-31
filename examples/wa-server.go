@@ -23,47 +23,30 @@ func main() {
   }
 
   whatsappTransport.Listen( func( t *transports.WhatsappTransport ) {
-    // fmt.Println("callback!", t.Messages)
     for _, Value := range t.Messages {
       request := t.Serializer.DeserializeRequest([]byte(Value.Body))
       if request.Method == "" {
-        fmt.Println( "Ignoring message", Value.Id)
+        fmt.Println( "*** Ignoring message", "\n" )
         t.PurgeMessage( Value.Id )
         return
       }
 
-      fmt.Println( "Accepting message", Value.Id, request)
+      fmt.Println( "--> Receiving, accepting message\n", request, "\n")
       client := &http.Client{}
       response, _ := client.Do( request)
       defer response.Body.Close()
 
       rawBody, _ := ioutil.ReadAll( response.Body )
 
-      fmt.Println( "Got body", rawBody )
-
       serializedResponse := t.Serializer.Serialize(response, false).(transports.Response)
       serializedResponse.Body = string(rawBody)
 
       jsonResponse, _ := json.Marshal(serializedResponse)
 
-      fmt.Println( "Output: ", jsonResponse )
-
       t.SendMessage( string(jsonResponse) )
 
       t.PurgeMessage( Value.Id)
 
-      /*
-      client := &http.Client{}
-
-      response, _ := client.Do(request)
-
-      defer response.Body.Close()
-
-      rawBody, _ := ioutil.ReadAll( response.Body)
-
-      t.SendMessage( string(rawBody))
-      t.PurgeMessage( Value.Id)
-      */
     }
 
     t.Messages = make([]transports.WhatsappMessage, 0)
