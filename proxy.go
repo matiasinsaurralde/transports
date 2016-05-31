@@ -14,7 +14,7 @@ type Proxy struct {
 }
 
 func (proxy *Proxy) Listen() {
-	fmt.Println("Listening on", proxy.Port, ", transport:", proxy.Transport)
+	fmt.Println("Proxy listening on", proxy.Port )
 
 	err := errors.New("no transport specified")
 
