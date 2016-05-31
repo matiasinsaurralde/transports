@@ -19,7 +19,7 @@ func main() {
     YowsupWrapperPort: "8888",
   }
 
-  whatsappTransport.Listen(nil)
+  go whatsappTransport.Listen(nil)
 
   Proxy := transports.Proxy{
     Transport: whatsappTransport,
