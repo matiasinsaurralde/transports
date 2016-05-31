@@ -8,7 +8,7 @@ I started the [facebook tunnel](https://github.com/matiasinsaurralde/facebook-tu
 
 This repository includes some code to explore the idea, also I'm also planning to write a [pluggable transport](https://obfuscation.github.io/) for Tor in the future.
 
-## Setup
+## Available transports
 
 ### Facebook Transport
 
