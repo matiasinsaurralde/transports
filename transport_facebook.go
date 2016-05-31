@@ -79,7 +79,7 @@ func (t *FacebookTransport) Handler(w http.ResponseWriter, originalRequest *http
 
 	request, _ := http.NewRequest(originalRequest.Method, originalRequest.URL.String(), nil)
 
-	serializedRequest := t.Serializer.Serialize(request)
+	serializedRequest := t.Serializer.Serialize(request, true).([]byte)
 
 	fmt.Println("Got", originalRequest)
 	fmt.Println("Serialized", string(serializedRequest))
