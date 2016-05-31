@@ -26,8 +26,6 @@ type DefaultSerializer struct {
 
 func( serializer *DefaultSerializer ) Serialize( req interface{}, jsonOutput bool ) interface{} {
 
-  fmt.Println( "Serialize" )
-
   var output []byte
   var r interface{}
 
