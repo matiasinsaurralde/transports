@@ -42,8 +42,6 @@ func (t *WhatsappTransport) DaemonizeWrapper() {
 	cmd := exec.Command( "python3", YowsupHttpWrapperPath, t.Login, t.Password, t.YowsupWrapperPort )
 	err := cmd.Run()
 
-	fmt.Println(cmd,err)
-
 	if err != nil {
 		panic(err)
 	}
@@ -70,13 +68,15 @@ func( t *WhatsappTransport) FetchMessages() {
 	// fmt.Println( "Request:",resp, "Error:",err)
 
 	if err != nil {
-		fmt.Println( "Wrapper error:", err)
+		// fmt.Println( "Wrapper error:", err)
 		return
 	}
 
 	defer resp.Body.Close()
 
 	rawBody, _ := ioutil.ReadAll( resp.Body )
+
+	// fmt.Println(string(rawBody))
 
 	var messageList map[string]interface{}
 
@@ -111,19 +111,23 @@ func( t *WhatsappTransport) FetchMessages() {
 func (t *WhatsappTransport) SendMessage(body string) {
 	messagesUrl := strings.Join([]string{t.YowsupWrapperUrl, "messages"}, "")
 	message := WhatsappMessage{Body: body, Dest: t.Contact}
-	fmt.Println("Sending message", message)
 	jsonBuffer, _ := json.Marshal(&message)
 	http.Post(messagesUrl, "application/json", bytes.NewReader(jsonBuffer) )
+
+	fmt.Println("Sending message", jsonBuffer)
+
 	return
 }
 
 func (t *WhatsappTransport) DoLogin() bool {
-	fmt.Println("FacebookTransport, Login()")
+	// fmt.Println("FacebookTransport, Login()")
 	return true
 }
 
 func (t *WhatsappTransport) Prepare() {
 	fmt.Println("WhatsappTransport, Prepare()")
+
+	t.YowsupWrapperUrl = fmt.Sprintf("http://127.0.0.1:%s/", t.YowsupWrapperPort)
 
 	t.Serializer = DefaultSerializer{}
 
@@ -151,6 +155,7 @@ func (t *WhatsappTransport) Handler(w http.ResponseWriter, originalRequest *http
 
 	serializedRequest := t.Serializer.Serialize(originalRequest)
 
+	fmt.Println("SendMessage handler", t)
 	t.SendMessage(string(serializedRequest))
 
 	resp, _ := client.Do(request)
@@ -164,21 +169,25 @@ func (t *WhatsappTransport) Handler(w http.ResponseWriter, originalRequest *http
 
 func (t *WhatsappTransport) Listen( Callback WhatsappMessageCallback ) {
 
-	fmt.Println( "FacebookTransport, Listen()")
+	fmt.Println( "WhatsappTransport, Listen()")
 	fmt.Println("Polling...")
 
-	t.Prepare()
+	// t.YowsupWrapperUrl = fmt.Sprintf("http://127.0.0.1:%s/", t.YowsupWrapperPort)
+
+	if Callback != nil {
+		// t.YowsupWrapperUrl = fmt.Sprintf("http://127.0.0.1:%s/", t.YowsupWrapperPort)
+		t.Prepare()
+	}
 
 	go t.DaemonizeWrapper()
 
 	for {
-		fmt.Println( "Poll, messages:", t.Messages )
+		// fmt.Println( "Poll, messages:", t.Messages )
 		t.FetchMessages()
 		if Callback == nil {
 		} else {
 			Callback( t )
 		}
-		t.FetchMessages()
 		time.Sleep(1 * time.Second)
 	}
 	return
