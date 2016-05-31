@@ -6,13 +6,19 @@ A HTTP proxy that aims to support different transports.
 
 I started the [facebook tunnel](https://github.com/matiasinsaurralde/facebook-tunnel) project two years ago and I thought that it could be better to follow a modular approach for supporting other services (chat systems, platforms, *gram, *book?).
 
-This repository includes some code to explore the idea, also I'm also planning to write a [pluggable transport](https://obfuscation.github.io/) for Tor in the future.
+This repository includes some code to explore the idea.
+
+### Why not a TCP/UDP tunnel?
+
+At this time I'm not planning tuntap support (like I did in the previous project). I would like to focus on the transports. Also, I think that a HTTP proxy is easier to port and run, especially when considering that the project is built on Golang, where the output is a static binary. For example, it'll be very easy to build a binary for ARM.
 
 ## Available transports
 
-### Facebook Transport
+I've been working on these transports during the past week:
 
-This transports uses [surf](https://github.com/headzoo/surf), a stateful web browser built in Go.
+### Facebook Transport (early stage, sorry!)
+
+This transport uses [surf](https://github.com/headzoo/surf), a stateful web browser built in Go.
 
 Load your credentials by using ```export``` or the ```.env``` file:
 
@@ -22,11 +28,17 @@ FB_PASSWORD=supersecretpass
 FB_FRIEND=yourtunnelfriend
 ```
 
-### Whatsapp Transport
+I'm looking for collaborators from countries where the [Internet.org](https://info.internet.org/en/) campaigns like "Free Basics" are active, they could benefit from it :)
+
+### Whatsapp Transport (status: you can perform some GETs)
 
 This transport uses a [HTTP wrapper](https://github.com/matiasinsaurralde/yowsup-http-wrapper) for [yowsup](https://github.com/tgalal/yowsup) to send/receive Whatsapp messages.
 
-It would be good to have a "pure Golang" Whatsapp library but I think the current approach is fine for experimentation.
+I recorded this small video, showing some interactions with this transport. For the video I point my browser to the proxy and perform a test request to Akamai, the communication happens between two Whatsapp clients running on the same computer:
+
+![Whatsapp Transport](https://img.youtube.com/vi/5KhS7fueK9k/0.jpg)
+
+It would be good to have a "pure Golang" Whatsapp library but I think the current approach is fine for experimentation (anyone considering writing this?)
 
 The following environment variables are used:
 
@@ -40,6 +52,7 @@ WA_SERVER_PASSWORD=whatsappgeneratedpassword123
 ```
 
 **Requires Python 3**
+
 
 ## Contributors
 
