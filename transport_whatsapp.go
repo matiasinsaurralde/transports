@@ -77,8 +77,6 @@ func( t *WhatsappTransport) FetchMessages() {
 
 	rawBody, _ := ioutil.ReadAll( resp.Body )
 
-	// fmt.Println(string(rawBody))
-
 	var messageList map[string]interface{}
 
 	jsonErr := json.Unmarshal( rawBody, &messageList)
