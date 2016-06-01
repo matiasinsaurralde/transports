@@ -1,14 +1,14 @@
 package transports
 
 import (
-	"fmt"
-	"encoding/json"
-	"net/http"
-	"io/ioutil"
-	"os/exec"
-	"time"
-	"strings"
 	"bytes"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"os/exec"
+	"strings"
+	"time"
 	// "errors"
 )
 
@@ -18,31 +18,31 @@ var ResponseChannel chan Response
 
 type WhatsappTransport struct {
 	*Transport
-	Login         string
-	Password      string
-	Contact				string
-	YowsupWrapperPort	string
-	YowsupWrapperUrl string
-	Serializer		DefaultSerializer
-	Messages			[]WhatsappMessage
+	Login             string
+	Password          string
+	Contact           string
+	YowsupWrapperPort string
+	YowsupWrapperUrl  string
+	Serializer        DefaultSerializer
+	Messages          []WhatsappMessage
 	// ResponseChannel	chan Response
 }
 
 type WhatsappMessage struct {
-	Id string	`json:"id,omitempty"`
-	Body string `json:"msg,omitempty"`
-	Origin string	`json:"origin,omitempty"`
-	Dest string `json:"dest,omitempty"`
+	Id     string `json:"id,omitempty"`
+	Body   string `json:"msg,omitempty"`
+	Origin string `json:"origin,omitempty"`
+	Dest   string `json:"dest,omitempty"`
 }
 
 type WhatsappMessageCallback func(*WhatsappTransport)
 
 func (t *WhatsappTransport) DaemonizeWrapper() {
-	fmt.Println( "WhatsappTransport, daemonizing YowsupWrapper...")
+	fmt.Println("WhatsappTransport, daemonizing YowsupWrapper...")
 
 	t.YowsupWrapperUrl = fmt.Sprintf("http://127.0.0.1:%s/", t.YowsupWrapperPort)
 
-	cmd := exec.Command( "python3", YowsupHttpWrapperPath, t.Login, t.Password, t.YowsupWrapperPort )
+	cmd := exec.Command("python3", YowsupHttpWrapperPath, t.Login, t.Password, t.YowsupWrapperPort)
 	err := cmd.Run()
 
 	if err != nil {
@@ -50,21 +50,21 @@ func (t *WhatsappTransport) DaemonizeWrapper() {
 	}
 }
 
-func( t *WhatsappTransport) GetMessageIds() []string {
-	MessageIds := make( []string, 0 )
+func (t *WhatsappTransport) GetMessageIds() []string {
+	MessageIds := make([]string, 0)
 	for _, Message := range t.Messages {
-		MessageIds = append( MessageIds, Message.Id )
+		MessageIds = append(MessageIds, Message.Id)
 	}
 	return MessageIds
 }
 
-func( t *WhatsappTransport) PurgeMessage( Id string ) {
+func (t *WhatsappTransport) PurgeMessage(Id string) {
 	messagesUrl := fmt.Sprintf("%s%s?id=%s", t.YowsupWrapperUrl, "messages", Id)
-	deleteRequest, _ := http.NewRequest( "DELETE", messagesUrl, nil)
+	deleteRequest, _ := http.NewRequest("DELETE", messagesUrl, nil)
 	http.DefaultClient.Do(deleteRequest)
 }
 
-func( t *WhatsappTransport) FetchMessages() {
+func (t *WhatsappTransport) FetchMessages() {
 	messagesUrl := strings.Join([]string{t.YowsupWrapperUrl, "messages"}, "")
 	resp, err := http.Get(messagesUrl)
 
@@ -75,11 +75,11 @@ func( t *WhatsappTransport) FetchMessages() {
 
 	defer resp.Body.Close()
 
-	rawBody, _ := ioutil.ReadAll( resp.Body )
+	rawBody, _ := ioutil.ReadAll(resp.Body)
 
 	var messageList map[string]interface{}
 
-	jsonErr := json.Unmarshal( rawBody, &messageList)
+	jsonErr := json.Unmarshal(rawBody, &messageList)
 
 	if jsonErr != nil {
 		return
@@ -89,7 +89,7 @@ func( t *WhatsappTransport) FetchMessages() {
 
 	for Id, Values := range messageList {
 		ValuesMap := Values.(map[string]interface{})
-		Message := WhatsappMessage{ Id: Id, Body: ValuesMap["body"].(string), Origin: ValuesMap["origin"].(string) }
+		Message := WhatsappMessage{Id: Id, Body: ValuesMap["body"].(string), Origin: ValuesMap["origin"].(string)}
 		Exists := false
 
 		for _, ExistingId := range MessageIds {
@@ -100,7 +100,7 @@ func( t *WhatsappTransport) FetchMessages() {
 		}
 
 		if !Exists {
-			t.Messages = append( t.Messages, Message )
+			t.Messages = append(t.Messages, Message)
 		}
 	}
 
@@ -111,9 +111,9 @@ func (t *WhatsappTransport) SendMessage(body string) {
 	messagesUrl := strings.Join([]string{t.YowsupWrapperUrl, "messages"}, "")
 	message := WhatsappMessage{Body: body, Dest: t.Contact}
 	jsonBuffer, _ := json.Marshal(&message)
-	http.Post(messagesUrl, "application/json", bytes.NewReader(jsonBuffer) )
+	http.Post(messagesUrl, "application/json", bytes.NewReader(jsonBuffer))
 
-	fmt.Println("<-- Sending message\n", message, "\n" )
+	fmt.Println("<-- Sending message\n", message, "\n")
 
 	return
 }
@@ -127,7 +127,7 @@ func (t *WhatsappTransport) Prepare() {
 
 	t.Messages = make([]WhatsappMessage, 0)
 
-	ResponseChannel = make( chan Response )
+	ResponseChannel = make(chan Response)
 
 	return
 }
@@ -140,31 +140,31 @@ func (t *WhatsappTransport) Handler(w http.ResponseWriter, originalRequest *http
 
 	serializedRequest := t.Serializer.Serialize(originalRequest, true).([]byte)
 
-	go t.SendMessage( string(serializedRequest) )
+	go t.SendMessage(string(serializedRequest))
 
-	w.Header().Set( "Via", fmt.Sprintf("WhatsappTransport/%s", t.Contact) )
+	w.Header().Set("Via", fmt.Sprintf("WhatsappTransport/%s", t.Contact))
 
-	response := <- ResponseChannel
+	response := <-ResponseChannel
 
 	for HeaderKey, HeaderValue := range response.Headers {
-		w.Header().Set( HeaderKey, HeaderValue[0] )
+		w.Header().Set(HeaderKey, HeaderValue[0])
 	}
 
-	fmt.Println("--> Receiving message\n", response, "\n" )
-	fmt.Println("<-> Forwarding message\n", response, "\n" )
+	fmt.Println("--> Receiving message\n", response, "\n")
+	fmt.Println("<-> Forwarding message\n", response, "\n")
 
-	w.Write( []byte(response.Body) )
+	w.Write([]byte(response.Body))
 
 }
 
-func(t *WhatsappTransport) HandleClientMessages() {
+func (t *WhatsappTransport) HandleClientMessages() {
 	for _, Value := range t.Messages {
 
 		response := t.Serializer.DeserializeResponse([]byte(Value.Body))
 
-		t.PurgeMessage( Value.Id)
+		t.PurgeMessage(Value.Id)
 
-		go func( r Response ) {
+		go func(r Response) {
 			ResponseChannel <- response
 		}(response)
 
@@ -172,7 +172,7 @@ func(t *WhatsappTransport) HandleClientMessages() {
 	t.Messages = make([]WhatsappMessage, 0)
 }
 
-func (t *WhatsappTransport) Listen( Callback WhatsappMessageCallback ) {
+func (t *WhatsappTransport) Listen(Callback WhatsappMessageCallback) {
 
 	// fmt.Println( "WhatsappTransport, Listen()")
 	fmt.Println("Polling...")
@@ -190,7 +190,7 @@ func (t *WhatsappTransport) Listen( Callback WhatsappMessageCallback ) {
 		if Callback == nil {
 			t.HandleClientMessages()
 		} else {
-			Callback( t )
+			Callback(t)
 		}
 		time.Sleep(1 * time.Second)
 	}

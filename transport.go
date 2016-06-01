@@ -1,6 +1,8 @@
 package transports
 
-import( "net/http" )
+import (
+	"net/http"
+)
 
 type Transport struct {
 	Name string

@@ -2,11 +2,10 @@ package transports
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
-	"errors"
 )
-
 
 type Proxy struct {
 	Port      int
@@ -14,7 +13,7 @@ type Proxy struct {
 }
 
 func (proxy *Proxy) Listen() {
-	fmt.Println("Proxy listening on", proxy.Port )
+	fmt.Println("Proxy listening on", proxy.Port)
 
 	err := errors.New("no transport specified")
 
@@ -27,7 +26,7 @@ func (proxy *Proxy) Listen() {
 	transport.Prepare()
 
 	http.HandleFunc("/", transport.Handler)
-	http.ListenAndServe( ":8080", nil)
+	http.ListenAndServe(":8080", nil)
 
 	return
 }

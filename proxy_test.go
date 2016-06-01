@@ -1,11 +1,11 @@
 package transports
 
 import (
-	"testing"
 	"fmt"
+	"testing"
 )
 
-func TestInitializationWithoutTransport( t *testing.T ) {
+func TestInitializationWithoutTransport(t *testing.T) {
 	transport := Transport{}
 	proxy := Proxy{
 		Transport: transport,

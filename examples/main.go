@@ -1,27 +1,27 @@
 package main
 
-import(
-  "github.com/matiasinsaurralde/transports"
-  "github.com/joho/godotenv"
-  "fmt"
-  "os"
+import (
+	"fmt"
+	"github.com/joho/godotenv"
+	"github.com/matiasinsaurralde/transports"
+	"os"
 )
 
 func main() {
-  godotenv.Load()
+	godotenv.Load()
 
-  fmt.Println("Transports test")
+	fmt.Println("Transports test")
 
-  facebookTransport := transports.FacebookTransport{
-    Login: os.Getenv( "FB_LOGIN" ),
-    Password: os.Getenv( "FB_PASSWORD" ),
-    Friend: os.Getenv( "FB_FRIEND" ),
-  }
+	facebookTransport := transports.FacebookTransport{
+		Login:    os.Getenv("FB_LOGIN"),
+		Password: os.Getenv("FB_PASSWORD"),
+		Friend:   os.Getenv("FB_FRIEND"),
+	}
 
-  Proxy := transports.Proxy{
-    Transport: facebookTransport,
-    Port: 8080,
-  }
+	Proxy := transports.Proxy{
+		Transport: facebookTransport,
+		Port:      8080,
+	}
 
-  Proxy.Listen()
+	Proxy.Listen()
 }
