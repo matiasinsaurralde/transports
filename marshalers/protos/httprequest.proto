@@ -1,0 +1,5 @@
+message HttpRequest {
+  required string method = 1;
+  required string url = 2;
+  required string proto = 3;
+}
