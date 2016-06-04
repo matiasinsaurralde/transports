@@ -34,11 +34,11 @@ I'm looking for collaborators from countries where the [Internet.org](https://in
 
 This transport uses a [HTTP wrapper](https://github.com/matiasinsaurralde/yowsup-http-wrapper) for [yowsup](https://github.com/tgalal/yowsup) to send/receive Whatsapp messages.
 
-I recorded this small video, showing some interactions with this transport. For the video I point my browser to the proxy and perform a test request to Akamai, the communication happens between two Whatsapp clients running on the same computer:
+I recorded this small video, showing some interactions with this transport. For the demonstration I point my browser to the proxy and perform a test request to Akamai, the communication happens between two Whatsapp clients running on the same computer:
 
 [![Whatsapp Transport](https://img.youtube.com/vi/5KhS7fueK9k/0.jpg)](http://bit.ly/1TTu9wo)
 
-It would be good to have a "pure Golang" Whatsapp library but I think the current approach is fine for experimentation (anyone considering writing this?)
+It would be good to have a "pure Golang" Whatsapp library but I think the current approach is fine for experimentation (anyone considering writing this?).
 
 The following environment variables are used:
 
