@@ -2,9 +2,6 @@ package transports_test
 
 import (
 	"github.com/matiasinsaurralde/transports/marshalers"
-	// "github.com/matiasinsaurralde/transports/marshalers/protos"
-
-	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -12,8 +9,6 @@ import (
 )
 
 func init() {
-
-	log.Println("init")
 
 	url, _ := url.Parse("http://whatismyip.akamai.com/")
 
@@ -25,14 +20,24 @@ func init() {
 }
 
 func TestBasicChaining(t *testing.T) {
-	err, chain := transports.NewChain(transports.ProtobufMarshaler{},
-		transports.DummyMarshaler{})
+	err, chain := transports.NewChain(transports.DummyMarshaler{},
+		                                transports.DummyMarshaler{})
 
-	// chain := transports.Chain()
-	// chain.process()
+  if err != nil {
+    t.Fatal(err)
+  }
+
 	err, output := chain.Marshal(&request)
-	log.Println("err", err, "output", output)
-	// log.Println(1,chain)
+
+  if err != nil {
+    t.Fatal(err)
+  }
+
+  outputRequest := output.(*http.Request)
+
+  if outputRequest.URL != request.URL {
+    t.Fatal( "Couldn't match Request URL field after chaining")
+  }
 
 	return
 }
