@@ -19,7 +19,7 @@ func (marshaler ProtobufMarshaler) Marshal(i *interface{}) (error, interface{}) 
 	var r interface{}
 
 	if i == nil {
-		err = errors.New( MarshalerNilType )
+		err = errors.New( MarshalerNilTypeError )
 		return err, r
 	}
 
@@ -34,7 +34,7 @@ func (marshaler ProtobufMarshaler) Marshal(i *interface{}) (error, interface{}) 
 		r, err = proto.Marshal(requestProto)
 	case *http.Response:
 	default:
-		message := fmt.Sprintf( MarshalerTypeNotSupported )
+		message := fmt.Sprintf( MarshalerTypeNotSupportedError )
 		typestr := fmt.Sprintf( "%T", t )
 		err = errors.New( strings.Join([]string{message, typestr}, " ") )
 	}
