@@ -3,6 +3,7 @@ package transports_test
 import (
 	"bytes"
 	"github.com/matiasinsaurralde/transports/marshalers"
+	"github.com/matiasinsaurralde/transports/marshalers/protos"
 	"gopkg.in/kothar/brotli-go.v0/dec"
 	"strings"
 	"testing"
@@ -31,6 +32,35 @@ func TestBrotliMarshalChain(t *testing.T) {
 
 	if !bytes.Equal(protobufOutput, decompressedProtobuf) {
 		t.Fatal(transports.MarshalerUnexpectedOutput)
+	}
+
+}
+
+func TestBrotliUnmarshalChain(t *testing.T) {
+
+	_, chain := transports.NewChain(
+		transports.ProtobufMarshaler{},
+		transports.BrotliMarshaler{},
+	)
+
+	_, output := chain.Marshal(&request)
+
+	compressedOutput := output.([]byte)
+
+	var i interface{}
+	i = compressedOutput
+
+	err, unmarshalOutput := chain.Unmarshal(i)
+
+	if err != nil {
+		t.Fatal( err )
+	}
+
+	var protoOutput *transportsProto.HttpRequest
+	protoOutput = unmarshalOutput.(*transportsProto.HttpRequest)
+
+	if protoOutput.GetUrl() != "http://whatismyip.akamai.com/" {
+		t.Fatal( "Protobuffer field doesn't have the original HttpRequest value")
 	}
 
 }
