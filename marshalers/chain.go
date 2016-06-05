@@ -3,20 +3,19 @@ package transports
 import("log")
 
 type ChainData struct {
-  marshalers []interface{}
+  marshalers []Marshaler
   input interface{}
 }
 
 type Chain interface{
-  Process() interface{}
-  Input(interface{})
-  Output() ( error, interface{} )
+  Marshal( interface{} ) ( error, interface{} )
+  process() ( error, interface{} )
 }
 
-func NewChain( marshalers ...interface{}) Chain {
+func NewChain( marshalers ...Marshaler) Chain {
   log.Println("Got", marshalers)
   data := ChainData{marshalers, nil}
-  return Chain( data)
+  return Chain( &data )
   /*
   c := Chain()
   for i, m := range marshalers {
@@ -26,16 +25,42 @@ func NewChain( marshalers ...interface{}) Chain {
   */
 }
 
-func (s ChainData) Process() interface{} {
-  log.Println("Process?", s)
-  return nil
-}
+func (s *ChainData) process() ( error, interface{} ) {
+  log.Println("Process()", s )
+  /*x := DummyMarshaler{}
+  mm := Marshaler(&x)
+  log.Println("xd",mm)*/
 
-func (s ChainData) Input(interface{}) {
-  return
-}
+  var output interface{}
+  // var errors bool = false
 
-func (s ChainData) Output() ( error, interface{} ) {
   var err error
-  return err, nil
+
+  for i, m := range s.marshalers {
+    
+    log.Println( "--> Chain step #", i )
+    if output == nil {
+      log.Println( "No previous output, starting chain" )
+      err, output = m.Marshal(&s.input)
+      log.Println( "First output:", output, "Error:", err )
+    } else {
+      log.Println( "Previous output", output )
+      err, output = m.Marshal(&output)
+      log.Println( "New output:", output, "Error:", err )
+    }
+
+    if err != nil {
+      break
+    }
+
+  }
+
+  return err, output
+}
+
+func (s *ChainData) Marshal(i interface{}) ( error, interface{} ) {
+  log.Println("Output()", s)
+  s.input = i
+  err, output := s.process()
+  return err, output
 }
