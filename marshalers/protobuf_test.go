@@ -23,7 +23,7 @@ func init() {
 	}
 }
 
-func TestHttpRequestMarshal( t *testing.T ) {
+func TestProtobufHttpRequestMarshal( t *testing.T ) {
 	var marshaler transports.Marshaler
 	marshaler = transports.ProtobufMarshaler{}
 	var i interface{}
@@ -34,7 +34,7 @@ func TestHttpRequestMarshal( t *testing.T ) {
 	}
 }
 
-func TestHttpResponseMarshal( t *testing.T ) {
+func TestProtobufHttpResponseMarshal( t *testing.T ) {
 	var marshaler transports.Marshaler
 	marshaler = transports.ProtobufMarshaler{}
 	var i interface{}
@@ -45,7 +45,7 @@ func TestHttpResponseMarshal( t *testing.T ) {
 	}
 }
 
-func TestUnsupportedType( t *testing.T ) {
+func TestProtobufUnsupportedType( t *testing.T ) {
 	var marshaler transports.Marshaler
 	marshaler = transports.ProtobufMarshaler{}
 
@@ -64,7 +64,7 @@ func TestUnsupportedType( t *testing.T ) {
 	}
 }
 
-func TestNilInput( t *testing.T ) {
+func TestProtobufNilInput( t *testing.T ) {
 	var marshaler transports.Marshaler
 	marshaler = transports.ProtobufMarshaler{}
 	err, _ := marshaler.Marshal(nil)
