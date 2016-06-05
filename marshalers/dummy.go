@@ -1,16 +1,18 @@
 package transports
 
 import (
-	"net/http"
+  "log"
 )
 
 type DummyMarshaler struct {
 }
 
-func (marshaler *DummyMarshaler) Marshal(req interface{}) interface{} {
-	return nil
+func (marshaler DummyMarshaler) Marshal(i *interface{}) (error, interface{}) {
+  log.Println("** DummyMarshaler, input", *i)
+  var err error
+	return err, []byte("aa")
 }
 
-func (marshaler *DummyMarshaler) DeserializeRequest(Input []byte) *http.Request {
-	return nil
+func (marshaler DummyMarshaler) Unmarshal() {
+	return
 }
