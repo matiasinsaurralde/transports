@@ -18,12 +18,12 @@ func TestBrotliMarshalChain(t *testing.T) {
 
 	protobufOutput := output.([]byte)
 
-	_, chain = transports.NewChain(
+	_, compressionChain := transports.NewChain(
 		transports.ProtobufMarshaler{},
 		transports.BrotliMarshaler{},
 	)
 
-	_, output = chain.Marshal(&request)
+	_, output = compressionChain.Marshal(&request)
 
 	compressedOutput := output.([]byte)
 
