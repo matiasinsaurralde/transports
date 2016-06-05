@@ -14,7 +14,9 @@ type ChainData struct {
 
 type Chain interface {
 	Marshal(interface{}) (error, interface{})
-	process() (error, interface{})
+	Unmarshal(interface{}) (error, interface{})
+	process(bool) (error, interface{})
+	reverse() []Marshaler
 }
 
 func NewChain(marshalers ...Marshaler) (error, Chain) {
@@ -27,14 +29,22 @@ func NewChain(marshalers ...Marshaler) (error, Chain) {
 	return err, Chain(&data)
 }
 
-func (s *ChainData) process() (error, interface{}) {
+func (s *ChainData) process(reverseOrder bool) (error, interface{}) {
 	log.Println("Process()", s)
 
 	var output interface{}
 
 	var err error
 
-	for i, m := range s.marshalers {
+	var marshalers []Marshaler
+
+	if reverseOrder {
+		marshalers = s.reverse()
+	} else {
+		marshalers = s.marshalers
+	}
+
+	for i, m := range marshalers {
 
 		log.Println("--> Chain step #", i)
 		if output == nil {
@@ -56,9 +66,27 @@ func (s *ChainData) process() (error, interface{}) {
 	return err, output
 }
 
+func (s *ChainData) reverse() []Marshaler {
+	marshalers := make([]Marshaler, len(s.marshalers))
+	rindex := 0
+	for i := len(s.marshalers) - 1; i >= 0; i-- {
+		m := s.marshalers[i]
+		marshalers[rindex] = m
+		rindex++
+	}
+	return marshalers
+}
+
 func (s *ChainData) Marshal(i interface{}) (error, interface{}) {
 	log.Println("Output()", s)
 	s.input = i
-	err, output := s.process()
+	err, output := s.process(false)
+	return err, output
+}
+
+func (s *ChainData) Unmarshal(i interface{}) (error, interface{}) {
+	log.Println("Output()", s)
+	s.input = i
+	err, output := s.process(true)
 	return err, output
 }
