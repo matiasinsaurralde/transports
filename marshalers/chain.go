@@ -6,6 +6,7 @@ import (
 )
 
 const ChainSingleMarshalerError string = "A chain requires two or more Marshalers."
+const ChainNilOutput string = "The chain returned nil"
 
 type ChainData struct {
 	marshalers []Marshaler
@@ -49,11 +50,19 @@ func (s *ChainData) process(reverseOrder bool) (error, interface{}) {
 		log.Println("--> Chain step #", i)
 		if output == nil {
 			log.Println("No previous output, starting chain")
-			err, output = m.Marshal(&s.input)
+      if reverseOrder {
+        err, output = m.Unmarshal(&s.input)
+      } else {
+        err, output = m.Marshal(&s.input)
+      }
 			log.Println("First output:", output, "Error:", err)
 		} else {
 			log.Println("Previous output", output)
-			err, output = m.Marshal(&output)
+      if reverseOrder {
+        err, output = m.Unmarshal(&output)
+      } else {
+        err, output = m.Marshal(&output)
+      }
 			log.Println("New output:", output, "Error:", err)
 		}
 
@@ -62,6 +71,10 @@ func (s *ChainData) process(reverseOrder bool) (error, interface{}) {
 		}
 
 	}
+
+  if output == nil {
+    err = errors.New(ChainNilOutput)
+  }
 
 	return err, output
 }
