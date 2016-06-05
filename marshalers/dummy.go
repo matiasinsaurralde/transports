@@ -12,6 +12,6 @@ func (marshaler DummyMarshaler) Marshal(i *interface{}) (error, interface{}) {
 	return err, *i
 }
 
-func (marshaler DummyMarshaler) Unmarshal() {
-	return
+func (marshaler DummyMarshaler) Unmarshal(i *interface{}) (error, interface{}) {
+	return nil, nil
 }
