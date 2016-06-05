@@ -8,7 +8,6 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/matiasinsaurralde/transports/marshalers/protos"
-	// "log"
 )
 
 type ProtobufMarshaler struct {
@@ -42,6 +41,35 @@ func (marshaler ProtobufMarshaler) Marshal(i *interface{}) (error, interface{}) 
 	return err, r
 }
 
-func (marshaler ProtobufMarshaler) Unmarshal() {
-	return
+func (marshaler ProtobufMarshaler) Unmarshal(i *interface{}) (error, interface{}) {
+	var err error
+	var r interface{}
+
+	switch t := (*i).(type) {
+	case []byte:
+	default:
+		message := fmt.Sprintf(MarshalerTypeNotSupportedError)
+		typestr := fmt.Sprintf("%T", t)
+		err = errors.New(strings.Join([]string{message, typestr}, " "))
+	}
+
+	buffer := (*i).([]byte)
+
+	HttpResponse := &transportsProto.HttpResponse{}
+	err = proto.Unmarshal(buffer, HttpResponse)
+
+	if err == nil {
+		r = HttpResponse
+		return err, r
+	}
+
+	HttpRequest := &transportsProto.HttpRequest{}
+	err = proto.Unmarshal(buffer, HttpRequest)
+
+	if err == nil {
+		r = HttpRequest
+		return err, r
+	}
+
+	return err, nil
 }
