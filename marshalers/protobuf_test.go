@@ -11,10 +11,6 @@ import(
 	"log"
 )
 
-type UnknownType struct {
-	Field string
-}
-
 const TestRequestUrl string = "http://whatismyip.akamai.com/"
 
 var request http.Request
