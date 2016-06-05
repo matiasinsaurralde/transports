@@ -1,6 +1,6 @@
 message HttpResponse {
   required string status = 1;
-  required int statuscode = 2;
+  required int32 statuscode = 2;
   required string proto = 3;
   required string body = 4;
 }
