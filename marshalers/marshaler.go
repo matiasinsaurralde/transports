@@ -7,5 +7,5 @@ const MarshalerUnexpectedOutput string = "Unexpected Marshaler output"
 
 type Marshaler interface {
 	Marshal(*interface{}) (error, interface{})
-	Unmarshal()
+	Unmarshal(*interface{}) (error, interface{})
 }
