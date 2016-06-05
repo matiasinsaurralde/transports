@@ -44,11 +44,6 @@ func TestBasicChaining(t *testing.T) {
 		t.Fatal(ChainTestBasicChainingError)
 	}
 
-  err, unmarshalOutput := chain.Unmarshal(output)
-
-  if err != nil || unmarshalOutput == nil {
-    t.Fatal(err)
-  }
 }
 
 func TestChainingWithSingleOrNoMarshalers(t *testing.T) {
