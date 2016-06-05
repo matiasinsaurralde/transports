@@ -8,6 +8,9 @@ import (
 	"testing"
 )
 
+const ChainTestBasicChainingError string = "Couldn't match Request URL field after chaining"
+const ChainTestMarshalerCountError string = "A chain should have at least two Marshalers"
+
 func init() {
 
 	url, _ := url.Parse("http://whatismyip.akamai.com/")
@@ -21,41 +24,42 @@ func init() {
 
 func TestBasicChaining(t *testing.T) {
 	err, chain := transports.NewChain(transports.DummyMarshaler{},
-		                                transports.DummyMarshaler{})
+		transports.DummyMarshaler{})
 
-  if err != nil {
-    t.Fatal(err)
-  }
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	err, output := chain.Marshal(&request)
 
-  if err != nil {
-    t.Fatal(err)
-  }
+	if err != nil {
+		t.Fatal(err)
+	}
 
-  outputRequest := output.(*http.Request)
+	outputRequest := output.(*http.Request)
 
-  if outputRequest.URL != request.URL {
-    t.Fatal( "Couldn't match Request URL field after chaining")
-  }
+	if outputRequest.URL != request.URL {
+		t.Fatal(ChainTestBasicChainingError)
+	}
 
 	return
 }
 
 func TestChainingWithSingleOrNoMarshalers(t *testing.T) {
 	err, chain := transports.NewChain(transports.ProtobufMarshaler{})
+
 	if err == nil || chain != nil {
-		t.Fatal("A chain should have at least two Marshalers")
+		t.Fatal(ChainTestMarshalerCountError)
 	}
 	if strings.Index(err.Error(), transports.ChainSingleMarshalerError) < 0 {
-		t.Fatal("A chain should have at least two Marshalers")
+		t.Fatal(ChainTestMarshalerCountError)
 	}
 
 	err, chain = transports.NewChain()
 	if err == nil || chain != nil {
-		t.Fatal("A chain should have at least two Marshalers")
+		t.Fatal(ChainTestMarshalerCountError)
 	}
 	if strings.Index(err.Error(), transports.ChainSingleMarshalerError) < 0 {
-		t.Fatal("A chain should have at least two Marshalers")
+		t.Fatal(ChainTestMarshalerCountError)
 	}
 }
