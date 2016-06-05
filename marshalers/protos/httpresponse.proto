@@ -1,3 +1,5 @@
+package transports;
+
 message HttpResponse {
   required string status = 1;
   required int32 statuscode = 2;

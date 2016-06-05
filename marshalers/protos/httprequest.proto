@@ -1,3 +1,5 @@
+package transports;
+
 message HttpRequest {
   required string method = 1;
   required string url = 2;
