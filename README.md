@@ -57,7 +57,7 @@ WA_SERVER_PASSWORD=whatsappgeneratedpassword123
 
 ## Marshalers
 
-I'm working on providing a set of "marshalers" and a simple API to combine them, this could be useful for conducting network/system usage benchmark experiments & performing a good choice.
+I'm working on providing a [set of "marshalers" and a simple API to combine them](https://github.com/matiasinsaurralde/transports/tree/master/marshalers), this could be useful for conducting network/system usage benchmark experiments & performing a good choice.
 
 [Protocol buffers](https://github.com/google/protobuf) sound like a good option, instead of JSON (which is what I'm actually using for the Whatsapp transport). Also [brotli](https://github.com/google/brotli) looks promising. A combination of these two is a very interesting thing to consider.
 
