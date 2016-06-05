@@ -8,18 +8,13 @@ import(
 	"net/http"
 	"net/url"
 	"testing"
-	"log"
 )
-
-const TestRequestUrl string = "http://whatismyip.akamai.com/"
 
 var request http.Request
 
 func init() {
 
-	log.Println("init")
-
-	url, _ := url.Parse( TestRequestUrl)
+	url, _ := url.Parse( "http://whatismyip.akamai.com/")
 
 	request = http.Request{
 		Method: "GET",
