@@ -24,18 +24,13 @@ func init() {
 }
 
 func TestChaining( t *testing.T ) {
-	marshaler := transports.ProtobufMarshaler{}
-	output := marshaler.Marshal( request )
-
-  if output == nil {
-  }
-
   chain := transports.NewChain( transports.ProtobufMarshaler{},
                                 transports.DummyMarshaler{} )
 
-  chain.Input(&request)
+
   // chain := transports.Chain()
-  output, err := chain.Output()
+  // chain.process()
+  output, err := chain.Marshal( &request )
   log.Println("output", output, "err", err)
   // log.Println(1,chain)
 
