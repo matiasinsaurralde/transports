@@ -2,7 +2,7 @@
 // source: httpresponse.proto
 // DO NOT EDIT!
 
-package transports
+package transportsProto
 
 import proto "github.com/golang/protobuf/proto"
 import fmt "fmt"

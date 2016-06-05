@@ -13,7 +13,7 @@ It has these top-level messages:
 	HttpRequest
 	HttpResponse
 */
-package transports
+package transportsProto
 
 import proto "github.com/golang/protobuf/proto"
 import fmt "fmt"
