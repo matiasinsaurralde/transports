@@ -1,16 +1,15 @@
 package transports
 
 import (
-  "log"
+  // "log"
 )
 
 type DummyMarshaler struct {
 }
 
 func (marshaler DummyMarshaler) Marshal(i *interface{}) (error, interface{}) {
-  log.Println("** DummyMarshaler, input", *i)
   var err error
-	return err, []byte("aa")
+	return err, *i
 }
 
 func (marshaler DummyMarshaler) Unmarshal() {
