@@ -1,14 +1,21 @@
-package transports
+package transports_test
 
 import(
 	"github.com/matiasinsaurralde/transports/marshalers"
 	// "github.com/matiasinsaurralde/transports/marshalers/protos"
 
+	"strings"
 	"net/http"
 	"net/url"
 	"testing"
 	"log"
 )
+
+type UnknownType struct {
+	Field string
+}
+
+const TestRequestUrl string = "http://whatismyip.akamai.com/"
 
 var request http.Request
 
@@ -16,7 +23,7 @@ func init() {
 
 	log.Println("init")
 
-	url, _ := url.Parse( "http://whatismyip.akamai.com/")
+	url, _ := url.Parse( TestRequestUrl)
 
 	request = http.Request{
 		Method: "GET",
@@ -25,13 +32,53 @@ func init() {
 	}
 }
 
-func TestMarshalRequest( t *testing.T ) {
-	marshaler := transports.ProtobufMarshaler{}
-	output := marshaler.Marshal( request )
-
-	if output == nil {
-		log.Fatal( "Output is nil" )
+func TestHttpRequestMarshal( t *testing.T ) {
+	var marshaler transports.Marshaler
+	marshaler = transports.ProtobufMarshaler{}
+	var i interface{}
+	i = request
+	_, err := marshaler.Marshal(&i)
+	if err != nil {
+		t.Fatal("Can't marshal HttpRequest")
 	}
+}
 
-	return
+func TestHttpResponseMarshal( t *testing.T ) {
+	var marshaler transports.Marshaler
+	marshaler = transports.ProtobufMarshaler{}
+	var i interface{}
+	i = request
+	_, err := marshaler.Marshal(&i)
+	if err != nil {
+		t.Fatal("Can't marshal HttpResponse")
+	}
+}
+
+func TestUnsupportedType( t *testing.T ) {
+	var marshaler transports.Marshaler
+	marshaler = transports.ProtobufMarshaler{}
+
+	var v UnknownType
+	v = UnknownType{"Value"}
+
+	var i interface{}
+	i = v
+
+	err, _ := marshaler.Marshal(&i)
+
+	exists := strings.Index(err.Error(), transports.MarshalerTypeNotSupported)
+
+	if exists < 0 {
+		t.Fatal("Unsupported type doesn't break the Protobuf marshaler")
+	}
+}
+
+func TestNilInput( t *testing.T ) {
+	var marshaler transports.Marshaler
+	marshaler = transports.ProtobufMarshaler{}
+	err, _ := marshaler.Marshal(nil)
+
+	if strings.Index( err.Error(), transports.MarshalerNilType ) < 0 {
+		t.Fatal("Nil type doesn't break the Protobuf marshaler")
+	}
 }
