@@ -1,14 +1,14 @@
 package transports
 
 import (
-  // "log"
+// "log"
 )
 
 type DummyMarshaler struct {
 }
 
 func (marshaler DummyMarshaler) Marshal(i *interface{}) (error, interface{}) {
-  var err error
+	var err error
 	return err, *i
 }
 

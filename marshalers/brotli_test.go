@@ -1,41 +1,41 @@
 package transports_test
 
-import(
+import (
+	"bytes"
 	"github.com/matiasinsaurralde/transports/marshalers"
-  "gopkg.in/kothar/brotli-go.v0/dec"
-  "strings"
-  "bytes"
-  "testing"
+	"gopkg.in/kothar/brotli-go.v0/dec"
+	"strings"
+	"testing"
 )
 
-func TestBrotliMarshalChain ( t *testing.T ) {
+func TestBrotliMarshalChain(t *testing.T) {
 
-  _, chain := transports.NewChain(
-    transports.ProtobufMarshaler{},
-    transports.DummyMarshaler{},
-  )
-  _, output := chain.Marshal(&request)
+	_, chain := transports.NewChain(
+		transports.ProtobufMarshaler{},
+		transports.DummyMarshaler{},
+	)
+	_, output := chain.Marshal(&request)
 
-  protobufOutput := output.([]byte)
+	protobufOutput := output.([]byte)
 
-  _, chain = transports.NewChain(
-    transports.ProtobufMarshaler{},
-    transports.BrotliMarshaler{},
-  )
+	_, chain = transports.NewChain(
+		transports.ProtobufMarshaler{},
+		transports.BrotliMarshaler{},
+	)
 
-  _, output = chain.Marshal( &request)
+	_, output = chain.Marshal(&request)
 
-  compressedOutput := output.([]byte)
+	compressedOutput := output.([]byte)
 
-  decompressedProtobuf, _ := dec.DecompressBuffer(compressedOutput, make([]byte, 0))
+	decompressedProtobuf, _ := dec.DecompressBuffer(compressedOutput, make([]byte, 0))
 
-  if !bytes.Equal( protobufOutput, decompressedProtobuf ) {
-    t.Fatal(transports.MarshalerUnexpectedOutput)
-  }
+	if !bytes.Equal(protobufOutput, decompressedProtobuf) {
+		t.Fatal(transports.MarshalerUnexpectedOutput)
+	}
 
 }
 
-func TestBrotliUnsupportedType( t *testing.T ) {
+func TestBrotliUnsupportedType(t *testing.T) {
 	var marshaler transports.Marshaler
 	marshaler = transports.BrotliMarshaler{}
 
@@ -54,12 +54,12 @@ func TestBrotliUnsupportedType( t *testing.T ) {
 	}
 }
 
-func TestBrotliNilInput( t *testing.T ) {
+func TestBrotliNilInput(t *testing.T) {
 	var marshaler transports.Marshaler
 	marshaler = transports.BrotliMarshaler{}
 	err, _ := marshaler.Marshal(nil)
 
-	if strings.Index( err.Error(), transports.MarshalerNilTypeError ) < 0 {
+	if strings.Index(err.Error(), transports.MarshalerNilTypeError) < 0 {
 		t.Fatal("Nil type doesn't break the Brotli marshaler")
 	}
 }

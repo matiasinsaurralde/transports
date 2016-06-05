@@ -1,12 +1,12 @@
 package transports_test
 
-import(
+import (
 	"github.com/matiasinsaurralde/transports/marshalers"
 	// "github.com/matiasinsaurralde/transports/marshalers/protos"
 
-	"strings"
 	"net/http"
 	"net/url"
+	"strings"
 	"testing"
 )
 
@@ -14,16 +14,16 @@ var request http.Request
 
 func init() {
 
-	url, _ := url.Parse( "http://whatismyip.akamai.com/")
+	url, _ := url.Parse("http://whatismyip.akamai.com/")
 
 	request = http.Request{
 		Method: "GET",
-		URL: url,
-		Proto: "HTTP/1.0",
+		URL:    url,
+		Proto:  "HTTP/1.0",
 	}
 }
 
-func TestProtobufHttpRequestMarshal( t *testing.T ) {
+func TestProtobufHttpRequestMarshal(t *testing.T) {
 	var marshaler transports.Marshaler
 	marshaler = transports.ProtobufMarshaler{}
 	var i interface{}
@@ -34,7 +34,7 @@ func TestProtobufHttpRequestMarshal( t *testing.T ) {
 	}
 }
 
-func TestProtobufHttpResponseMarshal( t *testing.T ) {
+func TestProtobufHttpResponseMarshal(t *testing.T) {
 	var marshaler transports.Marshaler
 	marshaler = transports.ProtobufMarshaler{}
 	var i interface{}
@@ -45,7 +45,7 @@ func TestProtobufHttpResponseMarshal( t *testing.T ) {
 	}
 }
 
-func TestProtobufUnsupportedType( t *testing.T ) {
+func TestProtobufUnsupportedType(t *testing.T) {
 	var marshaler transports.Marshaler
 	marshaler = transports.ProtobufMarshaler{}
 
@@ -64,12 +64,12 @@ func TestProtobufUnsupportedType( t *testing.T ) {
 	}
 }
 
-func TestProtobufNilInput( t *testing.T ) {
+func TestProtobufNilInput(t *testing.T) {
 	var marshaler transports.Marshaler
 	marshaler = transports.ProtobufMarshaler{}
 	err, _ := marshaler.Marshal(nil)
 
-	if strings.Index( err.Error(), transports.MarshalerNilTypeError ) < 0 {
+	if strings.Index(err.Error(), transports.MarshalerNilTypeError) < 0 {
 		t.Fatal("Nil type doesn't break the Protobuf marshaler")
 	}
 }
