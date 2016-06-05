@@ -23,8 +23,10 @@ func init() {
 }
 
 func TestBasicChaining(t *testing.T) {
-	err, chain := transports.NewChain(transports.DummyMarshaler{},
-		transports.DummyMarshaler{})
+	err, chain := transports.NewChain(
+    transports.DummyMarshaler{},
+		transports.DummyMarshaler{},
+  )
 
 	if err != nil {
 		t.Fatal(err)
@@ -42,7 +44,11 @@ func TestBasicChaining(t *testing.T) {
 		t.Fatal(ChainTestBasicChainingError)
 	}
 
-	return
+  err, unmarshalOutput := chain.Unmarshal(output)
+
+  if err != nil || unmarshalOutput == nil {
+    t.Fatal(err)
+  }
 }
 
 func TestChainingWithSingleOrNoMarshalers(t *testing.T) {
