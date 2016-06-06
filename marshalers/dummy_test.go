@@ -33,7 +33,7 @@ func TestMarshal(t *testing.T) {
 
 	outputVariable := output.(UnknownType)
 
-	if outputVariable.Field == TestVariableString {
+	if outputVariable.Field != TestVariableString {
 		t.Fatal("Couldn't match the UnknownType field value")
 	}
 }
