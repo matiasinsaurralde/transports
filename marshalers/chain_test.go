@@ -24,9 +24,9 @@ func init() {
 
 func TestBasicChaining(t *testing.T) {
 	err, chain := transports.NewChain(
-    transports.DummyMarshaler{},
 		transports.DummyMarshaler{},
-  )
+		transports.DummyMarshaler{},
+	)
 
 	if err != nil {
 		t.Fatal(err)

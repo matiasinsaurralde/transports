@@ -53,14 +53,14 @@ func TestBrotliUnmarshalChain(t *testing.T) {
 	err, unmarshalOutput := chain.Unmarshal(i)
 
 	if err != nil {
-		t.Fatal( err )
+		t.Fatal(err)
 	}
 
 	var protoOutput *transportsProto.HttpRequest
 	protoOutput = unmarshalOutput.(*transportsProto.HttpRequest)
 
 	if protoOutput.GetUrl() != "http://whatismyip.akamai.com/" {
-		t.Fatal( "Protobuffer field doesn't have the original HttpRequest value")
+		t.Fatal("Protobuffer field doesn't have the original HttpRequest value")
 	}
 
 }

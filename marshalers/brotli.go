@@ -47,11 +47,10 @@ func (marshaler BrotliMarshaler) Unmarshal(i *interface{}) (error, interface{}) 
 		return err, nil
 	}
 
-
 	var inputBuf []byte
 	inputBuf = (*i).([]byte)
 
-	buf, err := dec.DecompressBuffer( inputBuf, make([]byte, 0))
+	buf, err := dec.DecompressBuffer(inputBuf, make([]byte, 0))
 
 	return err, buf
 }
