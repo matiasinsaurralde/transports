@@ -8,6 +8,8 @@ build:
         name: go get
         code: |
           go get
+          ls ./
+          ls ./...
           cd ./.../marshalers && go get
           cd ./.../examples && go get
 
