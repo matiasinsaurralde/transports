@@ -8,14 +8,14 @@ build:
         name: go get
         code: |
           go get
-          cd ./marshalers && go get
-          cd ./examples && go get
+          cd ./.../marshalers && go get
+          cd ./.../examples && go get
 
     - script:
         name: go build
         code: |
           go build ./...
-          go build ./marshalers
+          go build ./.../marshalers
 
     - script:
         name: go test
