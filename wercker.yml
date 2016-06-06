@@ -8,13 +8,13 @@ build:
         name: go get
         code: |
           go get
+          go get github.com/joho/godotenv
           cd ./marshalers && go get
 
     - script:
         name: go build
         code: |
-          go build ./...
-          go build ./.../marshalers
+          go build ./marshalers
 
     - script:
         name: go test
