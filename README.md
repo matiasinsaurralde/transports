@@ -64,8 +64,9 @@ I'm working on providing a [set of "marshalers" and a simple API to combine them
 
 ## Ideas/to-do
 
-* Extend the test coverage
-* Think about some way of debugging the traffic
+* Extend the test coverage.
+* Think about some way of debugging the transports/traffic.
+* Run basic tests in additional platforms (e.g. ARM).
 
 ## Contributors
 
