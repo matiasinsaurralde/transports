@@ -68,6 +68,7 @@ I'm working on providing a [set of "marshalers" and a simple API to combine them
 * Extend the test coverage.
 * Think about some way of debugging the transports/traffic.
 * Run basic tests in additional platforms (e.g. ARM).
+* Plan strategies for mobile support, Golang is doing [great progress](https://github.com/golang/go/wiki/Mobile) on this.
 
 ## Contributors
 
