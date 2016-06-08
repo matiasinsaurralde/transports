@@ -62,6 +62,13 @@ I'm working on providing a [set of "marshalers" and a simple API to combine them
 
 [Protocol buffers](https://github.com/google/protobuf) sound like a good option, instead of JSON (which is what I'm actually using for the Whatsapp transport). Also [brotli](https://github.com/google/brotli) looks promising. A combination of these two is a very interesting thing to consider.
 
+## Ideas/to-do
+
+* Handle SSL.
+* Extend the test coverage.
+* Think about some way of debugging the transports/traffic.
+* Run basic tests in additional platforms (e.g. ARM).
+* Plan strategies for mobile support, Golang is doing [great progress](https://github.com/golang/go/wiki/Mobile) on this.
 
 ## Contributors
 
