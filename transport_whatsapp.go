@@ -23,6 +23,7 @@ type WhatsappTransport struct {
 	Contact           string
 	YowsupWrapperPort string
 	YowsupWrapperUrl  string
+	UseTor						bool
 	Serializer        DefaultSerializer
 	Messages          []WhatsappMessage
 	// ResponseChannel	chan Response
