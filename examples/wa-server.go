@@ -19,6 +19,7 @@ func main() {
 		Login:             os.Getenv("WA_SERVER_LOGIN"),
 		Password:          os.Getenv("WA_SERVER_PASSWORD"),
 		Contact:           os.Getenv("WA_SERVER_CONTACT"),
+		UseTor: true,
 		YowsupWrapperPort: "8889",
 	}
 
@@ -32,7 +33,12 @@ func main() {
 			}
 
 			fmt.Println("--> Receiving, accepting message\n", request, "\n")
-			client := &http.Client{}
+
+			transport := &http.Transport{}
+			if t.UseTor {
+				transport.Dial = transports.TorDialer().Dial
+			}
+			client := &http.Client{ Transport: transport}
 			response, _ := client.Do(request)
 			defer response.Body.Close()
 
