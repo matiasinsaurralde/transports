@@ -64,9 +64,13 @@ I'm working on providing a [set of "marshalers" and a simple API to combine them
 
 ## Tor support
 
-There's a Tor integration idea for the "server" side, I've did a few tests with it, under the following scenario:
+There's a Tor integration idea for the server side, I've did a few tests with it, under the following scenario:
 
 ![Tor Diagram](docs/tor_diagram.png)
+
+The [Whatsapp transport](https://github.com/matiasinsaurralde/transports/blob/master/transport_whatsapp.go) includes a flag to enable Tor (```UseTor```), I'm expecting to extend this flag to any transport.
+
+The Tor support is achieved by overriding the default ```http.Transport``` dialer with a [custom one](https://github.com/matiasinsaurralde/transports/blob/master/transport.go#L24).
 
 ## Ideas/to-do
 
