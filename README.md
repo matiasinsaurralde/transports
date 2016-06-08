@@ -62,6 +62,12 @@ I'm working on providing a [set of "marshalers" and a simple API to combine them
 
 [Protocol buffers](https://github.com/google/protobuf) sound like a good option, instead of JSON (which is what I'm actually using for the Whatsapp transport). Also [brotli](https://github.com/google/brotli) looks promising. A combination of these two is a very interesting thing to consider.
 
+## Tor support
+
+There's a Tor integration idea for the "server" side, I've did a few tests with it, under the following scenario:
+
+![Tor Diagram](docs/tor_diagram.png)
+
 ## Ideas/to-do
 
 * Handle SSL.
