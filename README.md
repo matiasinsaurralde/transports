@@ -88,4 +88,4 @@ The Tor support is achieved by overriding the default ```http.Transport``` diale
 
 ## License
 
-[MIT](https://github.com/matiasinsaurralde/transports/LICENSE)
+[MIT](https://github.com/matiasinsaurralde/transports/blob/master/LICENSE)
