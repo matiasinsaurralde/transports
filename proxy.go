@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+
+	"github.com/fukata/golang-stats-api-handler"
 )
 
 type Proxy struct {
@@ -26,6 +28,8 @@ func (proxy *Proxy) Listen() {
 	transport.Prepare()
 
 	http.HandleFunc("/", transport.Handler)
+	http.HandleFunc( "/stats", stats_api.Handler )
+
 	http.ListenAndServe(":8080", nil)
 
 	return
