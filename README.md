@@ -79,6 +79,7 @@ The Tor support is achieved by overriding the default ```http.Transport``` diale
 * Think about some way of debugging the transports/traffic.
 * Run basic tests in additional platforms (e.g. ARM).
 * Plan strategies for mobile support, Golang is doing [great progress](https://github.com/golang/go/wiki/Mobile) on this.
+* Multiplexing
 
 ## Contributors
 
