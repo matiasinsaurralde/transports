@@ -84,7 +84,7 @@ func (t *FreeFBTransport) Handler(w http.ResponseWriter, originalRequest *http.R
 	fmt.Println("Got", originalRequest)
 	fmt.Println("Serialized", string(serializedRequest))
 
-	MessageForm, _ := t.Browser.Form("#composerInput")
+	MessageForm, _ := t.Browser.Form("#composer_form")
 	MessageForm.Input("body", string(serializedRequest))
 	MessageForm.Submit()
 
