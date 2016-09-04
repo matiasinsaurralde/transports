@@ -96,12 +96,3 @@ func (t *FreeFBTransport) Handler(w http.ResponseWriter, originalRequest *http.R
 
 	return
 }
-
-func (t *FreeFBTransport) Listen() {
-	fmt.Println("FreeFBTransport, Listen()")
-	t.Prepare()
-	fmt.Println("Polling...")
-	for {
-	}
-	return
-}
