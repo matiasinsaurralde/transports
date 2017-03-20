@@ -12,7 +12,7 @@ import (
 	// "errors"
 )
 
-const YowsupHttpWrapperPath = "../yowsup-http-wrapper/run.py"
+const YowsupHTTPWrapperPath = "../yowsup-http-wrapper/run.py"
 
 var ResponseChannel chan Response
 
@@ -22,8 +22,8 @@ type WhatsappTransport struct {
 	Password          string
 	Contact           string
 	YowsupWrapperPort string
-	YowsupWrapperUrl  string
-	UseTor						bool
+	YowsupWrapperURL  string
+	UseTor            bool
 	Serializer        DefaultSerializer
 	Messages          []WhatsappMessage
 	// ResponseChannel	chan Response
@@ -41,9 +41,9 @@ type WhatsappMessageCallback func(*WhatsappTransport)
 func (t *WhatsappTransport) DaemonizeWrapper() {
 	fmt.Println("WhatsappTransport, daemonizing YowsupWrapper...")
 
-	t.YowsupWrapperUrl = fmt.Sprintf("http://127.0.0.1:%s/", t.YowsupWrapperPort)
+	t.YowsupWrapperURL = fmt.Sprintf("http://127.0.0.1:%s/", t.YowsupWrapperPort)
 
-	cmd := exec.Command("python3", YowsupHttpWrapperPath, t.Login, t.Password, t.YowsupWrapperPort)
+	cmd := exec.Command("python3", YowsupHTTPWrapperPath, t.Login, t.Password, t.YowsupWrapperPort)
 	err := cmd.Run()
 
 	if err != nil {
@@ -51,23 +51,23 @@ func (t *WhatsappTransport) DaemonizeWrapper() {
 	}
 }
 
-func (t *WhatsappTransport) GetMessageIds() []string {
-	MessageIds := make([]string, 0)
-	for _, Message := range t.Messages {
-		MessageIds = append(MessageIds, Message.Id)
+func (t *WhatsappTransport) GetMessageIDs() []string {
+	ids := make([]string, 0)
+	for _, message := range t.Messages {
+		ids = append(ids, message.Id)
 	}
-	return MessageIds
+	return ids
 }
 
 func (t *WhatsappTransport) PurgeMessage(Id string) {
-	messagesUrl := fmt.Sprintf("%s%s?id=%s", t.YowsupWrapperUrl, "messages", Id)
-	deleteRequest, _ := http.NewRequest("DELETE", messagesUrl, nil)
+	messagesURL := fmt.Sprintf("%s%s?id=%s", t.YowsupWrapperURL, "messages", Id)
+	deleteRequest, _ := http.NewRequest("DELETE", messagesURL, nil)
 	http.DefaultClient.Do(deleteRequest)
 }
 
 func (t *WhatsappTransport) FetchMessages() {
-	messagesUrl := strings.Join([]string{t.YowsupWrapperUrl, "messages"}, "")
-	resp, err := http.Get(messagesUrl)
+	messagesURL := strings.Join([]string{t.YowsupWrapperURL, "messages"}, "")
+	resp, err := http.Get(messagesURL)
 
 	if err != nil {
 		// fmt.Println( "Wrapper error:", err)
@@ -80,41 +80,39 @@ func (t *WhatsappTransport) FetchMessages() {
 
 	var messageList map[string]interface{}
 
-	jsonErr := json.Unmarshal(rawBody, &messageList)
+	err = json.Unmarshal(rawBody, &messageList)
 
-	if jsonErr != nil {
+	if err != nil {
 		return
 	}
 
-	MessageIds := t.GetMessageIds()
+	messageIDs := t.GetMessageIDs()
 
-	for Id, Values := range messageList {
-		ValuesMap := Values.(map[string]interface{})
-		Message := WhatsappMessage{Id: Id, Body: ValuesMap["body"].(string), Origin: ValuesMap["origin"].(string)}
-		Exists := false
+	for id, values := range messageList {
+		valuesMap := values.(map[string]interface{})
+		message := WhatsappMessage{Id: id, Body: valuesMap["body"].(string), Origin: valuesMap["origin"].(string)}
+		exists := false
 
-		for _, ExistingId := range MessageIds {
-			if ExistingId == Id {
-				Exists = true
+		for _, existingID := range messageIDs {
+			if existingID == id {
+				exists = true
 				return
 			}
 		}
 
-		if !Exists {
-			t.Messages = append(t.Messages, Message)
+		if !exists {
+			t.Messages = append(t.Messages, message)
 		}
 	}
-
-	return
 }
 
 func (t *WhatsappTransport) SendMessage(body string) {
-	messagesUrl := strings.Join([]string{t.YowsupWrapperUrl, "messages"}, "")
+	messagesURL := strings.Join([]string{t.YowsupWrapperURL, "messages"}, "")
 	message := WhatsappMessage{Body: body, Dest: t.Contact}
 	jsonBuffer, _ := json.Marshal(&message)
-	http.Post(messagesUrl, "application/json", bytes.NewReader(jsonBuffer))
+	http.Post(messagesURL, "application/json", bytes.NewReader(jsonBuffer))
 
-	fmt.Println("<-- Sending message\n", message, "\n")
+	fmt.Println("<-- Sending message\n", message)
 
 	return
 }
@@ -122,7 +120,7 @@ func (t *WhatsappTransport) SendMessage(body string) {
 func (t *WhatsappTransport) Prepare() {
 	// fmt.Println("WhatsappTransport, Prepare()")
 
-	t.YowsupWrapperUrl = fmt.Sprintf("http://127.0.0.1:%s/", t.YowsupWrapperPort)
+	t.YowsupWrapperURL = fmt.Sprintf("http://127.0.0.1:%s/", t.YowsupWrapperPort)
 
 	t.Serializer = DefaultSerializer{}
 
@@ -151,8 +149,8 @@ func (t *WhatsappTransport) Handler(w http.ResponseWriter, originalRequest *http
 		w.Header().Set(HeaderKey, HeaderValue[0])
 	}
 
-	fmt.Println("--> Receiving message\n", response, "\n")
-	fmt.Println("<-> Forwarding message\n", response, "\n")
+	fmt.Println("--> Receiving message\n", response)
+	fmt.Println("<-> Forwarding message\n", response)
 
 	w.Write([]byte(response.Body))
 
@@ -195,5 +193,4 @@ func (t *WhatsappTransport) Listen(Callback WhatsappMessageCallback) {
 		}
 		time.Sleep(1 * time.Second)
 	}
-	return
 }

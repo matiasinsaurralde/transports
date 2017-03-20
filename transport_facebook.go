@@ -3,10 +3,11 @@ package transports
 import (
 	"errors"
 	"fmt"
-	"github.com/headzoo/surf"
-	"github.com/headzoo/surf/browser"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/headzoo/surf"
+	"github.com/headzoo/surf/browser"
 )
 
 type FacebookTransport struct {
@@ -16,7 +17,7 @@ type FacebookTransport struct {
 	Friend     string
 	Browser    *browser.Browser
 	Serializer DefaultSerializer
-	ChatUrl    string
+	ChatURL    string
 }
 
 func (t *FacebookTransport) DoLogin() bool {
@@ -41,8 +42,8 @@ func (t *FacebookTransport) DoLogin() bool {
 
 	fmt.Println("Logged in as", t.Browser.Title(), "?")
 
-	FriendUrl := fmt.Sprintf("https://mobile.facebook.com/%s", t.Friend)
-	err = t.Browser.Open(FriendUrl)
+	FriendURL := fmt.Sprintf("https://mobile.facebook.com/%s", t.Friend)
+	err = t.Browser.Open(FriendURL)
 
 	if err != nil {
 		panic(err)
@@ -50,7 +51,7 @@ func (t *FacebookTransport) DoLogin() bool {
 
 	t.Browser.Click("a[href*=\"/messages/thread/\"]")
 
-	t.ChatUrl = t.Browser.Url().String()
+	t.ChatURL = t.Browser.Url().String()
 
 	return true
 
@@ -64,7 +65,7 @@ func (t *FacebookTransport) Prepare() {
 	t.Browser = surf.NewBrowser()
 
 	if !t.DoLogin() {
-		err := errors.New("Authentication error!")
+		err := errors.New("Authentication error")
 		panic(err)
 	}
 
@@ -73,7 +74,7 @@ func (t *FacebookTransport) Prepare() {
 
 func (t *FacebookTransport) Handler(w http.ResponseWriter, originalRequest *http.Request) {
 
-	t.Browser.Open(t.ChatUrl)
+	t.Browser.Open(t.ChatURL)
 
 	client := &http.Client{}
 
@@ -103,5 +104,4 @@ func (t *FacebookTransport) Listen() {
 	fmt.Println("Polling...")
 	for {
 	}
-	return
 }

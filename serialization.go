@@ -53,9 +53,8 @@ func (serializer *DefaultSerializer) Serialize(req interface{}, jsonOutput bool)
 	if jsonOutput {
 		output, _ = json.Marshal(r)
 		return output
-	} else {
-		return r
 	}
+	return r
 }
 
 func (serializer *DefaultSerializer) DeserializeRequest(Input []byte) *http.Request {
