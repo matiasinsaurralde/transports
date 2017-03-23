@@ -1,11 +1,12 @@
 package transports_test
 
 import (
-	"github.com/matiasinsaurralde/transports/marshalers"
 	"net/http"
 	"net/url"
 	"strings"
 	"testing"
+
+	"github.com/matiasinsaurralde/transports/marshalers"
 )
 
 const ChainTestBasicChainingError string = "Couldn't match Request URL field after chaining"
@@ -23,7 +24,7 @@ func init() {
 }
 
 func TestBasicChaining(t *testing.T) {
-	err, chain := transports.NewChain(
+	chain, err := transports.NewChain(
 		transports.DummyMarshaler{},
 		transports.DummyMarshaler{},
 	)
@@ -32,7 +33,7 @@ func TestBasicChaining(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	err, output := chain.Marshal(&request)
+	output, err := chain.Marshal(&request)
 
 	if err != nil {
 		t.Fatal(err)
@@ -47,7 +48,7 @@ func TestBasicChaining(t *testing.T) {
 }
 
 func TestChainingWithSingleOrNoMarshalers(t *testing.T) {
-	err, chain := transports.NewChain(transports.ProtobufMarshaler{})
+	chain, err := transports.NewChain(transports.ProtobufMarshaler{})
 
 	if err == nil || chain != nil {
 		t.Fatal(ChainTestMarshalerCountError)
@@ -56,7 +57,7 @@ func TestChainingWithSingleOrNoMarshalers(t *testing.T) {
 		t.Fatal(ChainTestMarshalerCountError)
 	}
 
-	err, chain = transports.NewChain()
+	chain, err = transports.NewChain()
 	if err == nil || chain != nil {
 		t.Fatal(ChainTestMarshalerCountError)
 	}

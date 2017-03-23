@@ -6,6 +6,6 @@ const MarshalerTypeNotSupportedError string = "Marshaler doesn't support the typ
 const MarshalerUnexpectedOutput string = "Unexpected Marshaler output"
 
 type Marshaler interface {
-	Marshal(*interface{}) (error, interface{})
-	Unmarshal(*interface{}) (error, interface{})
+	Marshal(*interface{}) (interface{}, error)
+	Unmarshal(*interface{}) (interface{}, error)
 }

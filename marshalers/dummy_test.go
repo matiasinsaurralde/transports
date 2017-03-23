@@ -1,8 +1,9 @@
 package transports_test
 
 import (
-	"github.com/matiasinsaurralde/transports/marshalers"
 	"testing"
+
+	"github.com/matiasinsaurralde/transports/marshalers"
 )
 
 type UnknownType struct {
@@ -25,7 +26,7 @@ func TestMarshal(t *testing.T) {
 
 	marshaler = transports.DummyMarshaler{}
 
-	err, output := marshaler.Marshal(&TestInterface)
+	output, err := marshaler.Marshal(&TestInterface)
 
 	if err != nil {
 		t.Fatal(err)

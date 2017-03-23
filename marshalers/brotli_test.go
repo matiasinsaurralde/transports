@@ -2,29 +2,30 @@ package transports_test
 
 import (
 	"bytes"
+	"strings"
+	"testing"
+
 	"github.com/matiasinsaurralde/transports/marshalers"
 	"github.com/matiasinsaurralde/transports/marshalers/protos"
 	"gopkg.in/kothar/brotli-go.v0/dec"
-	"strings"
-	"testing"
 )
 
 func TestBrotliMarshalChain(t *testing.T) {
 
-	_, chain := transports.NewChain(
+	chain, _ := transports.NewChain(
 		transports.ProtobufMarshaler{},
 		transports.DummyMarshaler{},
 	)
-	_, output := chain.Marshal(&request)
+	output, _ := chain.Marshal(&request)
 
 	protobufOutput := output.([]byte)
 
-	_, compressionChain := transports.NewChain(
+	compressionChain, _ := transports.NewChain(
 		transports.ProtobufMarshaler{},
 		transports.BrotliMarshaler{},
 	)
 
-	_, output = compressionChain.Marshal(&request)
+	output, _ = compressionChain.Marshal(&request)
 
 	compressedOutput := output.([]byte)
 
@@ -38,19 +39,19 @@ func TestBrotliMarshalChain(t *testing.T) {
 
 func TestBrotliUnmarshalChain(t *testing.T) {
 
-	_, chain := transports.NewChain(
+	chain, _ := transports.NewChain(
 		transports.ProtobufMarshaler{},
 		transports.BrotliMarshaler{},
 	)
 
-	_, output := chain.Marshal(&request)
+	output, _ := chain.Marshal(&request)
 
 	compressedOutput := output.([]byte)
 
 	var i interface{}
 	i = compressedOutput
 
-	err, unmarshalOutput := chain.Unmarshal(i)
+	unmarshalOutput, err := chain.Unmarshal(i)
 
 	if err != nil {
 		t.Fatal(err)
@@ -75,7 +76,7 @@ func TestBrotliUnsupportedType(t *testing.T) {
 	var i interface{}
 	i = v
 
-	err, _ := marshaler.Marshal(&i)
+	_, err := marshaler.Marshal(&i)
 
 	exists := strings.Index(err.Error(), transports.MarshalerTypeNotSupportedError)
 
@@ -87,7 +88,7 @@ func TestBrotliUnsupportedType(t *testing.T) {
 func TestBrotliNilInput(t *testing.T) {
 	var marshaler transports.Marshaler
 	marshaler = transports.BrotliMarshaler{}
-	err, _ := marshaler.Marshal(nil)
+	_, err := marshaler.Marshal(nil)
 
 	if strings.Index(err.Error(), transports.MarshalerNilTypeError) < 0 {
 		t.Fatal("Nil type doesn't break the Brotli marshaler")

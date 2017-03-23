@@ -13,13 +13,13 @@ import (
 type ProtobufMarshaler struct {
 }
 
-func (marshaler ProtobufMarshaler) Marshal(i *interface{}) (error, interface{}) {
+func (marshaler ProtobufMarshaler) Marshal(i *interface{}) (interface{}, error) {
 	var err error
 	var r interface{}
 
 	if i == nil {
 		err = errors.New(MarshalerNilTypeError)
-		return err, r
+		return r, err
 	}
 
 	switch t := (*i).(type) {
@@ -38,10 +38,10 @@ func (marshaler ProtobufMarshaler) Marshal(i *interface{}) (error, interface{}) 
 		err = errors.New(strings.Join([]string{message, typestr}, " "))
 	}
 
-	return err, r
+	return r, err
 }
 
-func (marshaler ProtobufMarshaler) Unmarshal(i *interface{}) (error, interface{}) {
+func (marshaler ProtobufMarshaler) Unmarshal(i *interface{}) (interface{}, error) {
 	var err error
 	var r interface{}
 
@@ -55,20 +55,20 @@ func (marshaler ProtobufMarshaler) Unmarshal(i *interface{}) (error, interface{}
 
 	buffer := (*i).([]byte)
 
-	HttpResponse := &transportsProto.HttpResponse{}
-	err = proto.Unmarshal(buffer, HttpResponse)
+	httpResponse := &transportsProto.HttpResponse{}
+	err = proto.Unmarshal(buffer, httpResponse)
 
 	if err == nil {
-		r = HttpResponse
-		return err, r
+		r = httpResponse
+		return r, err
 	}
 
-	HttpRequest := &transportsProto.HttpRequest{}
-	err = proto.Unmarshal(buffer, HttpRequest)
+	httpRequest := &transportsProto.HttpRequest{}
+	err = proto.Unmarshal(buffer, httpRequest)
 
 	if err == nil {
-		r = HttpRequest
-		return err, r
+		r = httpRequest
+		return r, err
 	}
 
 	return err, nil

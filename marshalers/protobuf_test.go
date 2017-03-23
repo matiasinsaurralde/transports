@@ -55,7 +55,7 @@ func TestProtobufUnsupportedType(t *testing.T) {
 	var i interface{}
 	i = v
 
-	err, _ := marshaler.Marshal(&i)
+	_, err := marshaler.Marshal(&i)
 
 	exists := strings.Index(err.Error(), transports.MarshalerTypeNotSupportedError)
 
@@ -67,7 +67,7 @@ func TestProtobufUnsupportedType(t *testing.T) {
 func TestProtobufNilInput(t *testing.T) {
 	var marshaler transports.Marshaler
 	marshaler = transports.ProtobufMarshaler{}
-	err, _ := marshaler.Marshal(nil)
+	_, err := marshaler.Marshal(nil)
 
 	if strings.Index(err.Error(), transports.MarshalerNilTypeError) < 0 {
 		t.Fatal("Nil type doesn't break the Protobuf marshaler")

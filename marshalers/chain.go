@@ -14,23 +14,23 @@ type ChainData struct {
 }
 
 type Chain interface {
-	Marshal(interface{}) (error, interface{})
-	Unmarshal(interface{}) (error, interface{})
-	process(bool) (error, interface{})
+	Marshal(interface{}) (interface{}, error)
+	Unmarshal(interface{}) (interface{}, error)
+	process(bool) (interface{}, error)
 	reverse() []Marshaler
 }
 
-func NewChain(marshalers ...Marshaler) (error, Chain) {
+func NewChain(marshalers ...Marshaler) (Chain, error) {
 	var err error
 	if len(marshalers) <= 1 {
 		err = errors.New(ChainSingleMarshalerError)
-		return err, nil
+		return nil, err
 	}
 	data := ChainData{marshalers, nil}
-	return err, Chain(&data)
+	return Chain(&data), err
 }
 
-func (s *ChainData) process(reverseOrder bool) (error, interface{}) {
+func (s *ChainData) process(reverseOrder bool) (interface{}, error) {
 	log.Println("Process()", s)
 
 	var output interface{}
@@ -51,17 +51,17 @@ func (s *ChainData) process(reverseOrder bool) (error, interface{}) {
 		if output == nil {
 			log.Println("No previous output, starting chain")
 			if reverseOrder {
-				err, output = m.Unmarshal(&s.input)
+				output, err = m.Unmarshal(&s.input)
 			} else {
-				err, output = m.Marshal(&s.input)
+				output, err = m.Marshal(&s.input)
 			}
 			log.Println("First output:", output, "Error:", err)
 		} else {
 			log.Println("Previous output", output)
 			if reverseOrder {
-				err, output = m.Unmarshal(&output)
+				output, err = m.Unmarshal(&output)
 			} else {
-				err, output = m.Marshal(&output)
+				output, err = m.Marshal(&output)
 			}
 			log.Println("New output:", output, "Error:", err)
 		}
@@ -76,7 +76,7 @@ func (s *ChainData) process(reverseOrder bool) (error, interface{}) {
 		err = errors.New(ChainNilOutput)
 	}
 
-	return err, output
+	return output, err
 }
 
 func (s *ChainData) reverse() []Marshaler {
@@ -90,16 +90,16 @@ func (s *ChainData) reverse() []Marshaler {
 	return marshalers
 }
 
-func (s *ChainData) Marshal(i interface{}) (error, interface{}) {
+func (s *ChainData) Marshal(i interface{}) (interface{}, error) {
 	log.Println("Output()", s)
 	s.input = i
-	err, output := s.process(false)
-	return err, output
+	output, err := s.process(false)
+	return output, err
 }
 
-func (s *ChainData) Unmarshal(i interface{}) (error, interface{}) {
+func (s *ChainData) Unmarshal(i interface{}) (interface{}, error) {
 	log.Println("Output()", s)
 	s.input = i
-	err, output := s.process(true)
-	return err, output
+	output, err := s.process(true)
+	return output, err
 }

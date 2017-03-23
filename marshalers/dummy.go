@@ -1,17 +1,12 @@
 package transports
 
-import (
-// "log"
-)
-
 type DummyMarshaler struct {
 }
 
-func (marshaler DummyMarshaler) Marshal(i *interface{}) (error, interface{}) {
-	var err error
-	return err, *i
+func (marshaler DummyMarshaler) Marshal(i *interface{}) (interface{}, error) {
+	return *i, nil
 }
 
-func (marshaler DummyMarshaler) Unmarshal(i *interface{}) (error, interface{}) {
+func (marshaler DummyMarshaler) Unmarshal(i *interface{}) (interface{}, error) {
 	return nil, nil
 }

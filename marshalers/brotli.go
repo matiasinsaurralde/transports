@@ -2,6 +2,7 @@ package transports
 
 import (
 	"errors"
+
 	"gopkg.in/kothar/brotli-go.v0/dec"
 	"gopkg.in/kothar/brotli-go.v0/enc"
 )
@@ -9,7 +10,7 @@ import (
 type BrotliMarshaler struct {
 }
 
-func (marshaler BrotliMarshaler) Marshal(i *interface{}) (error, interface{}) {
+func (marshaler BrotliMarshaler) Marshal(i *interface{}) (interface{}, error) {
 	var err error
 
 	if i == nil {
@@ -29,10 +30,10 @@ func (marshaler BrotliMarshaler) Marshal(i *interface{}) (error, interface{}) {
 
 	buf, err := enc.CompressBuffer(nil, inputBuf, make([]byte, 0))
 
-	return err, buf
+	return buf, err
 }
 
-func (marshaler BrotliMarshaler) Unmarshal(i *interface{}) (error, interface{}) {
+func (marshaler BrotliMarshaler) Unmarshal(i *interface{}) (interface{}, error) {
 	var err error
 
 	if i == nil {
@@ -52,5 +53,5 @@ func (marshaler BrotliMarshaler) Unmarshal(i *interface{}) (error, interface{}) 
 
 	buf, err := dec.DecompressBuffer(inputBuf, make([]byte, 0))
 
-	return err, buf
+	return buf, err
 }
