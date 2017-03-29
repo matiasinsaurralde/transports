@@ -1,7 +1,6 @@
 package transports
 
 import (
-	"fmt"
 	"testing"
 )
 

@@ -30,7 +30,7 @@ type WhatsappTransport struct {
 }
 
 type WhatsappMessage struct {
-	Id     string `json:"id,omitempty"`
+	ID     string `json:"id,omitempty"`
 	Body   string `json:"msg,omitempty"`
 	Origin string `json:"origin,omitempty"`
 	Dest   string `json:"dest,omitempty"`
@@ -54,7 +54,7 @@ func (t *WhatsappTransport) DaemonizeWrapper() {
 func (t *WhatsappTransport) GetMessageIDs() []string {
 	ids := make([]string, 0)
 	for _, message := range t.Messages {
-		ids = append(ids, message.Id)
+		ids = append(ids, message.ID)
 	}
 	return ids
 }
@@ -90,7 +90,7 @@ func (t *WhatsappTransport) FetchMessages() {
 
 	for id, values := range messageList {
 		valuesMap := values.(map[string]interface{})
-		message := WhatsappMessage{Id: id, Body: valuesMap["body"].(string), Origin: valuesMap["origin"].(string)}
+		message := WhatsappMessage{ID: id, Body: valuesMap["body"].(string), Origin: valuesMap["origin"].(string)}
 		exists := false
 
 		for _, existingID := range messageIDs {
@@ -161,7 +161,7 @@ func (t *WhatsappTransport) HandleClientMessages() {
 
 		response := t.Serializer.DeserializeResponse([]byte(Value.Body))
 
-		t.PurgeMessage(Value.Id)
+		t.PurgeMessage(Value.ID)
 
 		go func(r Response) {
 			ResponseChannel <- response
